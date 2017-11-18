@@ -23,7 +23,7 @@ This brief report for the John Hopkins Data Science Specialization Capstone Proj
 
 The first step I took (after reading in each file separately) was to randomly select 10,000 lines to read from each file, and with a little manipulation I can calculate the words in each line and the average words per line in each text (in the output below, the first data table is based on the blog text, the second table based on the news text and the third based on the twitter text).  
 
-```{r data tables, cache = TRUE}
+```{r data tables}
 source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
 source("/Users/marsh/data_science_coursera/JHU_capstone/eda.R")
 # blog summary
