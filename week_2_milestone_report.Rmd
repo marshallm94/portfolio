@@ -55,6 +55,8 @@ After combining the sources together, I can create a few bar-plots showing the 1
 
 ```{r}
 word_dist
+bigram_dist
+trigram_dist
 ```
 
 One thing to notice is the *inclusion* of “stopwords” (words that are very common in a given language, e.g. “of”, “the”, “to”, etc) in the bigram (two word sequence) and trigram (three word sequence) distributions. My reasoning for this is, although in some Natural Language Processing projects stopwords are omittted from the analysis so the algorithm can learn more from the text over fewer words, in this project **the goal is to create an app that predicts a word after having received a word or sequence of words.** Therefore, stopwords should be given some probability (certainly not 0) of being the next word in a sequence.
