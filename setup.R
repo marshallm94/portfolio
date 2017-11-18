@@ -18,7 +18,7 @@ blog <- getfile("blog")
 news <- getfile("news")
 twitter <- getfile("twitter")
 
-setwd('/Users/marsh/data_science_coursera/capstone/')
+setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
 # tokenize each text source by word, then combine
 word_token <- function(y) {

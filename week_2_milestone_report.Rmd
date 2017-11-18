@@ -24,8 +24,8 @@ This brief report for the John Hopkins Data Science Specialization Capstone Proj
 The first step I took (after reading in each file separately) was to randomly select 10,000 lines to read from each file, and with a little manipulation I can calculate the words in each line and the average words per line in each text (in the output below, the first data table is based on the blog text, the second table based on the news text and the third based on the twitter text).  
 
 ```{r data tables, cache = TRUE}
-source("/Users/marsh/data_science_coursera/capstone/setup.R")
-source("/Users/marsh/data_science_coursera/capstone/eda.R")
+source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
+source("/Users/marsh/data_science_coursera/JHU_capstone/eda.R")
 # blog summary
 blog_summary <- group_by(blog_df, line) %>% summarize(words_in_line = n())
 blog_summary <- mutate(blog_summary,
@@ -49,4 +49,34 @@ twitter_summary <- mutate(twitter_summary,
 twitter_summary
 ```
 
-However, it is important to remember that *the goal of this project is to create an app that predicts a word after having received a word or sequence of words.* It does not matter whether the sequence of words is from "Twitter" or a blog or a news source. Therefore, combining all the words together, disregarding what source they came from, will allow more relevant analysis.
+However, it is important to remember that **the goal of this project is to create an app that predicts a word after having received a word or sequence of words.** It does not matter whether the sequence of words is from “Twitter” or a blog or a news source. Therefore, combining all the words together, disregarding what source they came from, will allow a more relevant analysis.
+
+After combining the sources together, I can create a few bar-plots showing the 10 most common words and ngrams (two and three word sequences) in the combined data set.
+
+```{r}
+word_dist
+```
+
+One thing to notice is the *inclusion* of “stopwords” (words that are very common in a given language, e.g. “of”, “the”, “to”, etc) in the bigram (two word sequence) and trigram (three word sequence) distributions. My reasoning for this is, although in some Natural Language Processing projects stopwords are omittted from the analysis so the algorithm can learn more from the text over fewer words, in this project **the goal is to create an app that predicts a word after having received a word or sequence of words.** Therefore, stopwords should be given some probability (certainly not 0) of being the next word in a sequence.
+
+#### 2. Prediction Algorithm
+
+My rough plan for the prediction algorithm is:
+
+1. Use the distribution of single words to predict any given word without a preceding string of words.
+
+2. Use the bigram and trigram distribution combined with a series of regex code (code that searches through a string of text to find matches) to predict the next word given a previous sequence of words.
+
+The model is Markovian, which is a class of model where the conditional probability of the next event occuring (in our case, the next word being W) can be estimated without looking too far into the past. For example, given a string of six words, we can assume the probability of the seventh word given the previous six words is roughly equal to the probability of the seventh word given the preceding 1-3 words. The benefits of this assumption are:
+
+1. Computational efficiency; creating an algorithm that attempts to take in all previous information (preceding words) to predict the next word would require huge processing power.
+
+2. Flexibility; since language is inherently highly dynamic, even if my computer had the processing power mentioned above, new sequences of words are constantly being created, so “storing” all possible sequences of words is impossible.
+
+For a slighlty more in depth explanaion, imagine the string of words,“I have…” I will use a series of regex statements to reorder each distribution (word, bi gram and trigram) based on that information. So, the bigram distribution only inludes bigrams that begin with “have.” Similarly, the trigram distribution only includes sequences that begin with, “I have…” For the single word distribution, my plan is to sort the data so that only lines with the string anywhere in that line are shown.
+
+These three distributions will then be arranged in descending order (as the shown in the plots above), and, the next predicted word will be the one with the highest probability.
+
+#### 3. Shiny App
+
+My plan for the Shiny Application is a simple text box where the user types a string of words, and there will be a section where the next predicted word is shown (I might show the top 3 most probable words, still undecided)
