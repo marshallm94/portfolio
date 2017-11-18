@@ -1,0 +1,52 @@
+---
+title: "Week 2 Milestone Report"
+author: "Marshall McQuillen"
+date: "11/17/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### Overview
+
+This brief report for the John Hopkins Data Science Specialization Capstone Project will be broken down into 3 parts:
+
+1. **Exploratory Data Analysis (EDA)** - I will provide basic statistics on each of the three text files, as well as statistics on the combination of all three text files. Further, histograms will be provided for word and ngram (where n = 2 & 3) counts in each file as well as the combination of all three files.
+
+2. **Prediction Algorithm** - This section will contain no code, only ideas on how I plan on using the results from my EDA to create a prediction algorithm.
+
+3. **Shiny App** - Again, this section will contain no code, only a conceptual blueprint for how I plan on implementing the prediction algorithm into a Shiny App.  
+
+#### 1. EDA
+
+The first step I took (after reading in each file separately) was to randomly select 10,000 lines to read from each file, and with a little manipulation I can calculate the words in each line and the average words per line in each text (in the output below, the first data table is based on the blog text, the second table based on the news text and the third based on the twitter text).  
+
+```{r data tables, cache = TRUE}
+source("/Users/marsh/data_science_coursera/capstone/setup.R")
+source("/Users/marsh/data_science_coursera/capstone/eda.R")
+# blog summary
+blog_summary <- group_by(blog_df, line) %>% summarize(words_in_line = n())
+blog_summary <- mutate(blog_summary,
+                     avg_words_line =
+                         sum(blog_summary$words_in_line)/nrow(blog_summary))
+blog_summary
+
+# news summary
+news_summary <- group_by(news_df, line) %>% summarize(words_in_line = n())
+news_summary <- mutate(news_summary,
+                     avg_words_line =
+                         sum(news_summary$words_in_line)/nrow(news_summary))
+news_summary
+
+# twitter summary
+# blog_summary <- group_by(blog_df, line) %>% summarize(words_in_line = n())
+twitter_summary <- group_by(twitter_df, line) %>% summarize(words_in_line = n())
+twitter_summary <- mutate(twitter_summary,
+                     avg_words_line =
+                         sum(twitter_summary$words_in_line)/nrow(twitter_summary))
+twitter_summary
+```
+
+However, it is important to remember that *the goal of this project is to create an app that predicts a word after having received a word or sequence of words.* It does not matter whether the sequence of words is from "Twitter" or a blog or a news source. Therefore, combining all the words together, disregarding what source they came from, will allow more relevant analysis.
