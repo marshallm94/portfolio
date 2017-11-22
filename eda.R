@@ -10,7 +10,7 @@ top_words <- function(x, title, n = 10, stopword = FALSE) {
             print("Continuing with stopwords included...")
       }
       english <- NULL
-      for(i in letters) {
+      for (i in letters) {
             letter <- grep(i, df[[2]])
             english <- c(english, letter)
       }
@@ -33,7 +33,7 @@ word_dist <- top_words(total_word, "Word Distribution")
 top_ngrams <- function(x, title, n = 10) {
       df <- x
       english <- NULL
-      for(i in letters) {
+      for (i in letters) {
             letter <- grep(i, df[[2]])
             english <- c(english, letter)
       }
@@ -64,7 +64,7 @@ twitter_trigram_dist <- top_ngrams(twitter_trigram, "Trigram Twitter Distributio
 df <- anti_join(total_word, stop_words)
 
 english <- NULL
-for(i in letters) {
+for (i in letters) {
     letter <- grep(i, df$word)
     english <- c(english, letter)
 }

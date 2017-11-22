@@ -6,7 +6,7 @@ suppressPackageStartupMessages(library(tidytext))
 setwd('/Users/marsh/data_science_coursera/data/final/en_US/')
 
 # read in entire blog, news and twitter text files
-getfile <- function(text_source){
+getfile <- function(text_source) {
     x <- grep(text_source, list.files())
     con <- file(list.files()[x], "r")
     y <- readLines(con, skipNul = TRUE)
