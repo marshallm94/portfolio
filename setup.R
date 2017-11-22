@@ -22,7 +22,7 @@ setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
 # tokenize each text source by word, then combine
 word_token <- function(y) {
-    x <- sample(1:length(y), 10000)
+    x <- sample(1:length(y), 100000)
     z <- y[x]
     df <- as_data_frame(z)
     df2 <- mutate(df, line = rownames(df))
@@ -41,7 +41,7 @@ total_word <- rbind(blog_df, news_df, twitter_df)
 
 # tokenize each text source by bigram and trigram, then combine
 ngram_token <- function(y, number = 2) {
-    x <- sample(1:length(y), 10000)
+    x <- sample(1:length(y), 100000)
     z <- y[x]
     df <- as_data_frame(z)
     df2 <- mutate(df, line = rownames(df))

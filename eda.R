@@ -60,20 +60,3 @@ twitter_bigram_dist <- top_ngrams(twitter_bigram, "Bigram Twitter Distribution")
 blog_trigram_dist <- top_ngrams(blog_trigram, "Trigram Blog Distribution")
 news_trigram_dist <- top_ngrams(news_trigram, "Trigram News Distribution")
 twitter_trigram_dist <- top_ngrams(twitter_trigram, "Trigram Twitter Distribution")
-
-df <- anti_join(total_word, stop_words)
-
-english <- NULL
-for (i in letters) {
-    letter <- grep(i, df$word)
-    english <- c(english, letter)
-}
-
-# remove duplicate indices and filter out non-english words from df
-english <- unique(english)
-non_english_df <- df[-english,]
-df <- df[english,]
-df_dist <- count(df, word, sort = TRUE)
-df_dist <- mutate(df_dist, total = sum(n))
-df_dist <- mutate(df_dist, tf = n/total)
-

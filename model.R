@@ -1,10 +1,9 @@
 source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
-source("/Users/marsh/data_science_coursera/JHU_capstone/eda.R")
 
 # recall variables from setup.R
-total_word
-total_bigram
-total_trigram
+## total_word
+## total_bigram
+## total_trigram
 
 # remove non-english words from total_word
 english <- NULL
@@ -35,7 +34,6 @@ trigram_df <- total_trigram[english,]
 
 # enter test sentence
 a <- "The guy in front of me just bought a pound of bacon, a bouquet, and a case of"
-b <- "You're the reason why I smile everyday. Can you follow me please? It would mean the"
 
 sentence_to_word <- function(x) {
     df <- as_data_frame(x)
@@ -62,22 +60,18 @@ test <- sentence_to_ngram(a)
 fragment <- test[nrow(test),2]
 fragment <- paste("^", fragment, sep = "")
 
-indices <- grep(fragment, total_trigram[[2]])
-bing <- total_trigram[indices,]
+df_dist <- count(total_trigram, ngram, sort = TRUE)
+indices <- grep(fragment, df_dist[[1]])
+df_dist <- df_dist[indices,]
+topx <- df_dist[1:10,]
 
 # 1. reduce sentence to last 3 - 4 words
-selected <- grep("^mean the ", total_trigram[[2]])
-selected_df <- total_trigram[selected,]
 
 
 
-df_dist <- count(df, ngram, sort = TRUE)
-topx <- df_dist[1:10,]
+
 
 # for new/unseen ngrams in prediction model, if word predicted is wrong, input
 # entire sentence/sequence and add to file (add to data frame). For future calls
 # to function, give these user-inputed sequences for weight
-
-
-# beta area
 
