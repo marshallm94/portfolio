@@ -36,20 +36,36 @@ sentence_to_word <- function(x) {
     df3
 }
 
-sentence_to_ngram <- function(x, number = 2) {
+sentence_to_ngram <- function(x, n) {
     df <- as_data_frame(x)
     df2 <- mutate(df, line = rownames(df))
     df2$line <- as.integer(df2$line)
     df2 <- select(df2, line, value)
     df2 <- rename(df2, text = value)
-    df3 <- df2 %>% unnest_tokens(output = ngram, text, token = 'ngrams', n = number)
+    df3 <- df2 %>% unnest_tokens(output = ngram, text, token = 'ngrams', n = n)
     df3
 }
 
-test <- sentence_to_ngram(a)
+a <- "The man bought a bouquet and a case of"
 
-fragment <- test[nrow(test),2]
-fragment <- paste("^", fragment, sep = "")
+word_test <- sentence_to_word(a)
+bigram_test <- sentence_to_ngram(a, n = 2)
+trigram_test <- sentence_to_ngram(a, n = 3)
+quadgram_test <- sentence_to_ngram(a, n = 4)
+quintgram_test <- sentence_to_ngram(a, n = 5)
+
+word_fragment <- word_test[nrow(word_test),2]
+bigram_fragment <- bigram_test[nrow(bigram_test),2]
+trigram_fragment <- trigram_test[nrow(trigram_test),2]
+quadgram_fragment <- quadgram_test[nrow(quadgram_test),2]
+quintgram_fragment <- quintgram_test[nrow(quintgram_test),2]
+
+search_bigram <- paste("^", word_fragment, sep = "")
+search_trigram <- paste("^", bigram_fragment, sep = "")
+serach_quadgram <- paste("^", trigram_fragment, sep = "")
+serach_quintgram <- paste("^", quadgram_fragment, sep = "")
+
+
 
 df_dist <- count(total_trigram, ngram, sort = TRUE)
 indices <- grep(fragment, df_dist[[1]])
@@ -57,10 +73,6 @@ df_dist <- df_dist[indices,]
 topx <- df_dist[1:10,]
 
 # 1. reduce sentence to last 3 - 4 words
-
-
-
-
 
 # for new/unseen ngrams in prediction model, if word predicted is wrong, input
 # entire sentence/sequence and add to file (add to data frame). For future calls
