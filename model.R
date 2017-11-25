@@ -4,36 +4,27 @@ source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
 ## total_word
 ## total_bigram
 ## total_trigram
+## total_quadgram
+## total_quintgram
 
-# remove non-english words from total_word
-english <- NULL
-for (i in letters) {
-    letter <- grep(i, total_word[[2]])
-    english <- c(english, letter)
+# remove non-english words from all data sets
+remove_non_english <- function(x) {
+    english <- NULL
+    for (i in letters) {
+        letter <- grep(i, x[[2]])
+        english <- c(english, letter)
+    }
+    english <- unique(english)
+    x[english,]
 }
-english <- unique(english)
-word_df <- total_word[english,]
 
-# remove non-english words from total_bigram
-english <- NULL
-for (i in letters) {
-    letter <- grep(i, total_bigram[[2]])
-    english <- c(english, letter)
-}
-english <- unique(english)
-bigram_df <- total_bigram[english,]
-
-# remove non-english words from total_trigram
-english <- NULL
-for (i in letters) {
-    letter <- grep(i, total_trigram[[2]])
-    english <- c(english, letter)
-}
-english <- unique(english)
-trigram_df <- total_trigram[english,]
+word_df <- remove_non_english(total_word)
+bigram_df <- remove_non_english(total_bigram)
+trigram_df <- remove_non_english(total_trigram)
+quadgram_df <- remove_non_english(total_quadgram)
+quintgram_df <- remove_non_english(total_quintgram)
 
 # enter test sentence
-a <- "The guy in front of me just bought a pound of bacon, a bouquet, and a case of"
 
 sentence_to_word <- function(x) {
     df <- as_data_frame(x)
