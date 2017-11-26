@@ -24,7 +24,8 @@ trigram_df <- remove_non_english(total_trigram)
 quadgram_df <- remove_non_english(total_quadgram)
 quintgram_df <- remove_non_english(total_quintgram)
 
-# enter test sentence
+# remove stop words from word_df only
+word_df <- anti_join(word_df, stop_words)
 
 sentence_to_word <- function(x) {
     df <- as_data_frame(x)
@@ -46,7 +47,9 @@ sentence_to_ngram <- function(x, n) {
     df3
 }
 
+# enter test sentence here
 a <- "The man bought a bouquet and a case of"
+#########################
 
 word_test <- sentence_to_word(a)
 bigram_test <- sentence_to_ngram(a, n = 2)
@@ -54,23 +57,41 @@ trigram_test <- sentence_to_ngram(a, n = 3)
 quadgram_test <- sentence_to_ngram(a, n = 4)
 quintgram_test <- sentence_to_ngram(a, n = 5)
 
-word_fragment <- word_test[nrow(word_test),2]
-bigram_fragment <- bigram_test[nrow(bigram_test),2]
-trigram_fragment <- trigram_test[nrow(trigram_test),2]
-quadgram_fragment <- quadgram_test[nrow(quadgram_test),2]
-quintgram_fragment <- quintgram_test[nrow(quintgram_test),2]
+word_fragment <- word_test[nrow(word_test), 2]
+bigram_fragment <- bigram_test[nrow(bigram_test), 2]
+trigram_fragment <- trigram_test[nrow(trigram_test), 2]
+quadgram_fragment <- quadgram_test[nrow(quadgram_test), 2]
+quintgram_fragment <- quintgram_test[nrow(quintgram_test), 2]
 
-search_bigram <- paste("^", word_fragment, sep = "")
-search_trigram <- paste("^", bigram_fragment, sep = "")
-serach_quadgram <- paste("^", trigram_fragment, sep = "")
-serach_quintgram <- paste("^", quadgram_fragment, sep = "")
+search_bigram <- paste("^", word_fragment, " ", sep = "")
+search_trigram <- paste("^", bigram_fragment, " ", sep = "")
+search_quadgram <- paste("^", trigram_fragment, " ", sep = "")
+search_quintgram <- paste("^", quadgram_fragment, " ", sep = "")
 
+ordered_word <- count(word_df, word, sort = TRUE)
+ordered_bigram <- count(bigram_df, ngram, sort = TRUE)
+ordered_trigram <- count(trigram_df, ngram, sort = TRUE)
+ordered_quadgram <- count(quadgram_df, ngram, sort = TRUE)
+ordered_quintgram <- count(quintgram_df, ngram, sort = TRUE)
 
+# remove non-essential data sets to free up RAM
+rm(word_df, word_fragment, word_test,
+   bigram_df, bigram_fragment, bigram_test,
+   trigram_df, trigram_fragment, trigram_test,
+   quadgram_df, quadgram_fragment, quadgram_test,
+   quintgram_df, quintgram_fragment, quintgram_test)
 
-df_dist <- count(total_trigram, ngram, sort = TRUE)
-indices <- grep(fragment, df_dist[[1]])
-df_dist <- df_dist[indices,]
-topx <- df_dist[1:10,]
+fragment_search <- function(x, y) {
+    indices <- grep(x, y[[1]])
+    df_dist <- y[indices,]
+    topx <- df_dist[1:10,]
+    topx
+}
+
+fragment_search(search_bigram, ordered_bigram)
+fragment_search(search_trigram, ordered_trigram)
+fragment_search(search_quadgram, ordered_quadgram)
+fragment_search(search_quintgram, ordered_quintgram)
 
 # 1. reduce sentence to last 3 - 4 words
 
