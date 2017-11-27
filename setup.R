@@ -1,5 +1,6 @@
 #Load Libraries
 suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(quanteda))
 suppressPackageStartupMessages(library(tidytext))
 
 
@@ -20,9 +21,27 @@ twitter <- getfile("twitter")
 
 setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
+# iterate over ENTIRE data set to read in ALL lines
+iterate_file <- function(x) {
+    x <- blog
+    breaks <- quantile(1:length(x), probs = seq(0, 1, 0.1))
+    breaks <- round(breaks)
+    iterations <- NULL
+    for (i in breaks) {
+        x <- breaks[i] - breaks[(i-1)]
+        z <- y[x]
+        df <- as_data_frame(z)
+        df2 <- mutate(df, line = rownames(df))
+        df2$line <- as.integer(df2$line)
+        df2 <- select(df2, line, value)
+        df2 <- rename(df2, text = value)
+    }
+    
+}
+
 # tokenize function that samples 100,000 lines
 word_token <- function(y) {
-    x <- sample(1:length(y), 100000)
+    x <- sample(1:length(y), 100)
     z <- y[x]
     df <- as_data_frame(z)
     df2 <- mutate(df, line = rownames(df))
@@ -30,6 +49,7 @@ word_token <- function(y) {
     df2 <- select(df2, line, value)
     df2 <- rename(df2, text = value)
     df3 <- df2 %>% unnest_tokens(output = word, text, token = 'words')
+    df3 <- df2 %>% tokens_ngrams(output = word, text, token = 'words')
     df3
 }
 
