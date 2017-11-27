@@ -27,6 +27,33 @@ quintgram_df <- remove_non_english(total_quintgram)
 # remove stop words from word_df only
 word_df <- anti_join(word_df, stop_words)
 
+ordered_word <- count(word_df, word, sort = TRUE)
+ordered_bigram <- count(bigram_df, ngram, sort = TRUE)
+ordered_trigram <- count(trigram_df, ngram, sort = TRUE)
+ordered_quadgram <- count(quadgram_df, ngram, sort = TRUE)
+ordered_quintgram <- count(quintgram_df, ngram, sort = TRUE)
+
+# in order to improve performance, will reduce the data sets to only those 
+# tokens/ngrams that have a minimum count.
+ordered_word <- subset(ordered_word, n >= quantile(ordered_word$n, probs = 0.90))
+ordered_bigram <- subset(ordered_bigram, n >= quantile(ordered_bigram$n, probs = 0.90))
+ordered_trigram <- subset(ordered_trigram, n >= quantile(ordered_trigram$n, probs = 0.90))
+ordered_quadgram <- subset(ordered_quadgram, n >= quantile(ordered_quadgram$n, probs = 0.90))
+ordered_quintgram <- subset(ordered_quintgram, n >= quantile(ordered_quintgram$n, probs = 0.90))
+
+# remove non-total data sets to free RAM
+rm(
+    blog_df, news_df, twitter_df,
+    blog_bigram, news_bigram, twitter_bigram,
+    blog_trigram, news_trigram, twitter_trigram,
+    blog_quadgram, news_quadgram, twitter_quadgram,
+    blog_quintgram, news_quintgram, twitter_quintgram
+)
+
+# enter test sentence here
+a <- "The guy in front of me just bought a pound of bacon, a bouquet, and a case of"
+#########################
+
 sentence_to_word <- function(x) {
     df <- as_data_frame(x)
     df2 <- mutate(df, line = rownames(df))
@@ -47,10 +74,6 @@ sentence_to_ngram <- function(x, n) {
     df3
 }
 
-# enter test sentence here
-a <- "The man bought a bouquet and a case of"
-#########################
-
 word_test <- sentence_to_word(a)
 bigram_test <- sentence_to_ngram(a, n = 2)
 trigram_test <- sentence_to_ngram(a, n = 3)
@@ -68,18 +91,12 @@ search_trigram <- paste("^", bigram_fragment, " ", sep = "")
 search_quadgram <- paste("^", trigram_fragment, " ", sep = "")
 search_quintgram <- paste("^", quadgram_fragment, " ", sep = "")
 
-ordered_word <- count(word_df, word, sort = TRUE)
-ordered_bigram <- count(bigram_df, ngram, sort = TRUE)
-ordered_trigram <- count(trigram_df, ngram, sort = TRUE)
-ordered_quadgram <- count(quadgram_df, ngram, sort = TRUE)
-ordered_quintgram <- count(quintgram_df, ngram, sort = TRUE)
-
 # remove non-essential data sets to free up RAM
-rm(word_df, word_fragment, word_test,
-   bigram_df, bigram_fragment, bigram_test,
-   trigram_df, trigram_fragment, trigram_test,
-   quadgram_df, quadgram_fragment, quadgram_test,
-   quintgram_df, quintgram_fragment, quintgram_test)
+rm(word_fragment, word_test,
+   bigram_fragment, bigram_test,
+   trigram_fragment, trigram_test,
+   quadgram_fragment, quadgram_test,
+   quintgram_fragment, quintgram_test)
 
 fragment_search <- function(x, y) {
     indices <- grep(x, y[[1]])
@@ -92,8 +109,6 @@ fragment_search(search_bigram, ordered_bigram)
 fragment_search(search_trigram, ordered_trigram)
 fragment_search(search_quadgram, ordered_quadgram)
 fragment_search(search_quintgram, ordered_quintgram)
-
-# 1. reduce sentence to last 3 - 4 words
 
 # for new/unseen ngrams in prediction model, if word predicted is wrong, input
 # entire sentence/sequence and add to file (add to data frame). For future calls

@@ -80,12 +80,3 @@ news_quintgram <- ngram_token(news, n = 5)
 twitter_quintgram <- ngram_token(twitter, n = 5)
 
 total_quintgram <- rbind(blog_quintgram, news_quintgram, twitter_quintgram)
-
-# remove non-total data sets to free RAM
-rm(
-    blog_df, news_df, twitter_df,
-    blog_bigram, news_bigram, twitter_bigram,
-    blog_trigram, news_trigram, twitter_trigram,
-    blog_quadgram, news_quadgram, twitter_quadgram,
-    blog_quintgram, news_quintgram, twitter_quintgram
-)
