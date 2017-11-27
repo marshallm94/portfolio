@@ -33,8 +33,16 @@ ordered_trigram <- count(trigram_df, ngram, sort = TRUE)
 ordered_quadgram <- count(quadgram_df, ngram, sort = TRUE)
 ordered_quintgram <- count(quintgram_df, ngram, sort = TRUE)
 
+add_tf <- function(x) {
+    y <- sum(x$n)
+    x <- mutate(x, term_freq = n/y)
+    x
+}
+
 # in order to improve performance, will reduce the data sets to only those 
-# tokens/ngrams that have a minimum count.
+# tokens/ngrams that have a minimum count. (Since the count/term-frequence is so
+# low, the probability of my model choosing those ngrams is rather low, therefore
+# keeping them in the data set is a waste of memory)
 ordered_word <- subset(ordered_word, n >= quantile(ordered_word$n, probs = 0.90))
 ordered_bigram <- subset(ordered_bigram, n >= quantile(ordered_bigram$n, probs = 0.90))
 ordered_trigram <- subset(ordered_trigram, n >= quantile(ordered_trigram$n, probs = 0.90))
@@ -51,7 +59,7 @@ rm(
 )
 
 # enter test sentence here
-a <- "The guy in front of me just bought a pound of bacon, a bouquet, and a case of"
+a <- "You're the reason why I smile everyday. Can you follow me please? It would mean the"
 #########################
 
 sentence_to_word <- function(x) {
@@ -78,13 +86,11 @@ word_test <- sentence_to_word(a)
 bigram_test <- sentence_to_ngram(a, n = 2)
 trigram_test <- sentence_to_ngram(a, n = 3)
 quadgram_test <- sentence_to_ngram(a, n = 4)
-quintgram_test <- sentence_to_ngram(a, n = 5)
 
 word_fragment <- word_test[nrow(word_test), 2]
 bigram_fragment <- bigram_test[nrow(bigram_test), 2]
 trigram_fragment <- trigram_test[nrow(trigram_test), 2]
 quadgram_fragment <- quadgram_test[nrow(quadgram_test), 2]
-quintgram_fragment <- quintgram_test[nrow(quintgram_test), 2]
 
 search_bigram <- paste("^", word_fragment, " ", sep = "")
 search_trigram <- paste("^", bigram_fragment, " ", sep = "")
@@ -105,10 +111,13 @@ fragment_search <- function(x, y) {
     topx
 }
 
-fragment_search(search_bigram, ordered_bigram)
-fragment_search(search_trigram, ordered_trigram)
-fragment_search(search_quadgram, ordered_quadgram)
-fragment_search(search_quintgram, ordered_quintgram)
+quint_match <- fragment_search(search_quintgram, ordered_quintgram)
+quad_match <- fragment_search(search_quadgram, ordered_quadgram)
+tri_match <- fragment_search(search_trigram, ordered_trigram)
+bi_match <- fragment_search(search_bigram, ordered_bigram)
+
+
+
 
 # for new/unseen ngrams in prediction model, if word predicted is wrong, input
 # entire sentence/sequence and add to file (add to data frame). For future calls
