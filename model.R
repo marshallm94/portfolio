@@ -39,6 +39,12 @@ add_tf <- function(x) {
     x
 }
 
+ordered_word <- add_tf(ordered_word)
+ordered_bigram <- add_tf(ordered_bigram)
+ordered_trigram <- add_tf(ordered_trigram)
+ordered_quadgram <- add_tf(ordered_quadgram)
+ordered_quintgram <- add_tf(ordered_quintgram)
+
 # in order to improve performance, will reduce the data sets to only those 
 # tokens/ngrams that have a minimum count. (Since the count/term-frequence is so
 # low, the probability of my model choosing those ngrams is rather low, therefore
