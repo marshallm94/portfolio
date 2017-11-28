@@ -22,27 +22,33 @@ twitter <- getfile("twitter")
 
 # split each corpus into 10 quantiles
 split_corpus <- function(x) {
-    x <- blog
-    breaks <- quantile(1:length(x), probs = seq(0, 1, 0.1))
+    breaks <- quantile(1:length(x), probs = seq(0, 1, 0.05))
     breaks <- as.numeric(round(breaks))
     splits <- 1:(length(breaks) - 1)
-    all_splits <- list()
+    splits_df <- NULL
     for (i in splits) {
+        current_name <- paste("Partition", i, sep = "_")
         if (i == 1) {
-            current_name <- paste("Partition", i, sep = "_")
+            #current_name <- paste("Partition", i, sep = "_")
             current_length <- breaks[i:(i + 1)]
             
         } else {
-            current_name <- paste("Partition", i, sep = "_")
+            #current_name <- paste("Partition", i, sep = "_")
             a <- breaks[i] + 1
             b <- breaks[(i + 1)]
             current_length <- c(a,b)
         }
-        current_split <- x[current_length[1]:current_length[2]]
-        
+        current_df <- data.table(data_partition = current_name,
+                                 start = current_length[1],
+                                 stop = current_length[2])
+        splits_df <- rbind(splits_df, current_df)
     }
-    
+    splits_df
 }
+
+blog_splits <- split_corpus(blog)
+news_splits <- split_corpus(news)
+twitter_splits <- split_corpus(twitter)
 
 test <- blog
 bing <- tokens(test)
