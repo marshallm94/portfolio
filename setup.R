@@ -1,5 +1,6 @@
 #Load Libraries
 suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(quanteda))
 suppressPackageStartupMessages(library(tidytext))
 
@@ -19,37 +20,57 @@ blog <- getfile("blog")
 news <- getfile("news")
 twitter <- getfile("twitter")
 
-setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
-
-# iterate over ENTIRE data set to read in ALL lines
-iterate_file <- function(x) {
+# split each corpus into 10 quantiles
+split_corpus <- function(x) {
     x <- blog
     breaks <- quantile(1:length(x), probs = seq(0, 1, 0.1))
-    breaks <- round(breaks)
-    iterations <- NULL
-    for (i in breaks) {
-        x <- breaks[i] - breaks[(i-1)]
-        z <- y[x]
-        df <- as_data_frame(z)
-        df2 <- mutate(df, line = rownames(df))
-        df2$line <- as.integer(df2$line)
-        df2 <- select(df2, line, value)
-        df2 <- rename(df2, text = value)
+    breaks <- as.numeric(round(breaks))
+    splits <- 1:(length(breaks) - 1)
+    all_splits <- list()
+    for (i in splits) {
+        if (i == 1) {
+            current_name <- paste("Partition", i, sep = "_")
+            current_length <- breaks[i:(i + 1)]
+            
+        } else {
+            current_name <- paste("Partition", i, sep = "_")
+            a <- breaks[i] + 1
+            b <- breaks[(i + 1)]
+            current_length <- c(a,b)
+        }
+        current_split <- x[current_length[1]:current_length[2]]
+        
     }
     
 }
 
-# tokenize function that samples 100,000 lines
-word_token <- function(y) {
-    x <- sample(1:length(y), 100)
-    z <- y[x]
-    df <- as_data_frame(z)
+test <- blog
+bing <- tokens(test)
+bong <- tokens_ngrams(bing, 2, concatenator = " ")
+bong
+
+setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
+
+create_df <- function(x) {
+    df <- as_data_frame(x)
     df2 <- mutate(df, line = rownames(df))
     df2$line <- as.integer(df2$line)
     df2 <- select(df2, line, value)
     df2 <- rename(df2, text = value)
+    df2
+}
+
+blog <- create_df(blog)
+news <- create_df(news)
+twitter <- create_df(twitter)
+
+
+
+
+
+
+word_token <- function(y) {
     df3 <- df2 %>% unnest_tokens(output = word, text, token = 'words')
-    df3 <- df2 %>% tokens_ngrams(output = word, text, token = 'words')
     df3
 }
 
