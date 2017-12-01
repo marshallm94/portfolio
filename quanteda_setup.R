@@ -63,44 +63,31 @@ blog_splits <- split_corpus(blog)
 news_splits <- split_corpus(news)
 twitter_splits <- split_corpus(twitter)
 
-test_toks <- blog_toks[1:10000]
-test_splits <- blog_splits
+test_toks <- blog_toks[1:449644]
+test_splits <- blog_splits[1:10,]
 
 iterate_token <- function(x, y, n) {
     x <- test_splits
     y <- test_toks
-    n <- 2
-    dts<- NULL
+    n <- 1
+    total_gram <- NULL
     for (i in 1:nrow(x)) {
         name <- as.character(x[i,1])
         len <- as.integer(x[i,2]):as.integer(x[i,3])
-        z <- tokens_ngrams(y, n = n, concatenator = " ")
-        dt <- data.table(name = name, tokens = z)
-        print(paste(name, "complete...", sep = " "))
-        dts <- rbind(dts, dt)
-    }
-    dts
-}
-
-create_token <- function(x, n) {
-    y <- tokens_ngrams(x, n = n, concatenator = " ")
-    total_gram <- NULL
-    for (i in 1:length(y)) {
-        a <- as.character(y[i])
-        dt <- data.table(line = rep(i, length(a)), token = a)
-        total_gram <- rbind(total_gram, dt)
+        z <- tokens_ngrams(y[len], n = n, concatenator = " ")
+        print(paste("Tokenization of", name, "complete...", sep = " "))
+        for (i in 1:length(z)) {
+            name_1 <- i
+            a <- as.character(z[i])
+            dt <- data.table(line = rep(i, length(a)), token = a)
+            total_gram <- rbind(total_gram, dt)
+            print(paste("Addition of token group", name_1,
+                        "to data table complete", sep = " "))
+        }
     }
     total_gram
 }
 
-total_blog_bigram <- NULL
-for (i in 1:nrow(blog_splits)) {
-    len <- as.integer(blog_splits[i,2]):as.integer(blog_splits[i,3]) 
-    name <- as.character(blog_splits[i,1])
-    blog_tokens <- create_token(blog_toks[len], 2)
-    total_blog_bigram <- rbind(total_blog_bigram, blog_tokens)
-    print(paste(name, "complete...", sep = " "))
-}
 
 
 blog_dts <- iterate_token(blog_splits, blog)
