@@ -9,7 +9,7 @@ setwd('/Users/marsh/data_science_coursera/data/final/en_US/')
 getfile <- function(text_source) {
     x <- grep(text_source, list.files())
     con <- file(list.files()[x], "r")
-    y <- readLines(con, skipNul = TRUE)
+    y <- readLines(con, skipNul = TRUE, encoding = "UTF-8")
     close(con)
     y
 }
@@ -20,21 +20,40 @@ twitter <- getfile("twitter")
 
 setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
-blog_toks <- tokens(blog, remove_numbers = TRUE,
+total <- c(blog, news, twitter)
+
+total_corp <- corpus(total)
+
+sample_set <- sample(1:length(total), length(total)/4)
+
+corp <- total_corp[sample_set]
+
+rm(total_corp)
+
+corp_tokens <- tokenize(corp,
+                    remove_numbers = TRUE,
                     remove_punct = TRUE,
                     remove_symbols = TRUE,
                     remove_hyphens = TRUE,
                     remove_url = TRUE)
-news_toks <- tokens(news, remove_numbers = TRUE,
-                    remove_punct = TRUE,
-                    remove_symbols = TRUE,
-                    remove_hyphens = TRUE,
-                    remove_url = TRUE)
-twitter_toks <- tokens(twitter, remove_numbers = TRUE,
-                       remove_punct = TRUE,
-                       remove_symbols = TRUE,
-                       remove_hyphens = TRUE,
-                       remove_url = TRUE)
+
+rm(blog, twitter, news, sample_set, total)
+gc()
+
+unigram <- tokens_ngrams(corp_tokens, 1, concatenator = " ")
+bigram <- tokens_ngrams(corp_tokens, 2, concatenator = " ")
+trigram <- tokens_ngrams(corp_tokens, 3, concatenator = " ")
+quadgram <- tokens_ngrams(corp_tokens, 4, concatenator = " ")
+quintgram <- tokens_ngrams(corp_tokens, 5, concatenator = " ")
+
+for (i in 1:length(corp_tokens)) {
+    name <- i
+    tok <- tokens_ngrams(corp_tokens[i], 1, concatenator = " ")
+    dt <- as.data.table(unlist(tok))
+    total_dt <- rbind(total_dt, dt)
+    print(paste("Addition of token group", name, "complete", sep = " "))
+}
+
 
 # split each corpus into 20 partitions
 split_corpus <- function(x) {
@@ -63,13 +82,7 @@ blog_splits <- split_corpus(blog)
 news_splits <- split_corpus(news)
 twitter_splits <- split_corpus(twitter)
 
-test_toks <- blog_toks[1:449644]
-test_splits <- blog_splits[1:10,]
-
 iterate_token <- function(x, y, n) {
-    x <- test_splits
-    y <- test_toks
-    n <- 1
     total_gram <- NULL
     for (i in 1:nrow(x)) {
         name <- as.character(x[i,1])
@@ -88,15 +101,16 @@ iterate_token <- function(x, y, n) {
     total_gram
 }
 
-
-
-blog_dts <- iterate_token(blog_splits, blog)
-news_dts <- iterate_token(news_splits, news)
-twitter_dts <- iterate_token(twitter_splits, twitter)
-
-
-
 # unigram
+blog_unigram <- iterate_token(blog_splits, blog_toks, 1)
+news_unigram <- iterate_token(news_splits, news_toks, 1)
+twitter_unigram <- iterate_token(twitter_splits, twitter_toks, 1)
+
+total_unigram <- rbind(blog_unigram, news_unigram, twitter_unigram)
+
+
+
+
 uni_blog <- tokens_ngrams(blog_toks, n = 1)
 uni_news <- tokens_ngrams(news_toks, n = 1)
 uni_twitter <- tokens_ngrams(twitter_toks, n = 1)
