@@ -3,7 +3,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(quanteda))
 
-setwd('/Users/marsh/data_science_coursera/data/final/en_US/')
+setwd('/Users/marsh/data_science_coursera/JHU_capstone/data/final/en_US/')
 
 # read in entire blog, news and twitter text files
 getfile <- function(text_source) {
@@ -22,169 +22,97 @@ setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
 total <- c(blog, news, twitter)
 
-total_corp <- corpus(total)
-
 sample_set <- sample(1:length(total), length(total)/4)
 
-corp <- total_corp[sample_set]
+system.time(sample_corp <- corpus(total[sample_set]))
 
-rm(total_corp)
+rm(blog, news, twitter, sample_set, total)
 
-corp_tokens <- tokenize(corp,
+system.time(corp_tokens <- tokens(sample_corp,
                     remove_numbers = TRUE,
                     remove_punct = TRUE,
                     remove_symbols = TRUE,
                     remove_hyphens = TRUE,
-                    remove_url = TRUE)
+                    remove_url = TRUE))
 
-rm(blog, twitter, news, sample_set, total)
 gc()
 
-unigram <- tokens_ngrams(corp_tokens, 1, concatenator = " ")
-bigram <- tokens_ngrams(corp_tokens, 2, concatenator = " ")
-trigram <- tokens_ngrams(corp_tokens, 3, concatenator = " ")
-quadgram <- tokens_ngrams(corp_tokens, 4, concatenator = " ")
-quintgram <- tokens_ngrams(corp_tokens, 5, concatenator = " ")
-
-for (i in 1:length(corp_tokens)) {
-    name <- i
-    tok <- tokens_ngrams(corp_tokens[i], 1, concatenator = " ")
-    dt <- as.data.table(unlist(tok))
-    total_dt <- rbind(total_dt, dt)
-    print(paste("Addition of token group", name, "complete", sep = " "))
+create_ngram <- function(tokens, n) {
+    current_name <- paste(n, "gram", sep = "")
+    filename <- paste("./ngrams/", n, "gram.rds", sep = "")
+    
+    message(paste("Starting", current_name, "creation...", date(), sep = " "))
+    name <- tokens_ngrams(tokens, n, concatenator = " ")
+    message(paste("Creation of", current_name, "complete:", date(), sep = " "))
+    
+    saveRDS(name, file = filename)
+    message(paste("Saving of", filename, "complete:", date(), sep = " "))
+    
+    rm(name)
+    message(paste(current_name, "removed from workspace:", date(), sep = " "))
 }
 
+create_ngram(corp_tokens, 6)
+create_ngram(corp_tokens, 5)
+create_ngram(corp_tokens, 4)
+create_ngram(corp_tokens, 3)
+create_ngram(corp_tokens, 2)
+create_ngram(corp_tokens, 1)
 
-# split each corpus into 20 partitions
-split_corpus <- function(x) {
-    breaks <- quantile(1:length(x), probs = seq(0, 1, 0.05))
-    breaks <- as.numeric(round(breaks))
-    splits <- 1:(length(breaks) - 1)
-    splits_df <- NULL
-    for (i in splits) {
-        current_name <- paste("Partition", i, sep = "_")
-        if (i == 1) {
-            current_length <- breaks[i:(i + 1)]
-        } else {
-            a <- breaks[i] + 1
-            b <- breaks[(i + 1)]
-            current_length <- c(a,b)
-        }
-        current_df <- data.table(data_partition = current_name,
-                                 start = current_length[1],
-                                 stop = current_length[2])
-        splits_df <- rbind(splits_df, current_df)
+rm(corp_tokens, sample_corp)
+
+create_table <- function(file) {
+    message(paste("Reading", file, "into workspace...", date(), sep = " "))
+    x <- readRDS(file = file)
+    message(paste("Unlisting", file, "object...", date(), sep = " "))
+    unlisted <- unlist(x)
+    message(paste("Unnaming", file, "object...", date(), sep = " "))
+    unnamed <- unname(unlisted)
+    dt <- data.table(ngram = unnamed, count = 1)
+    message(paste("Transformation of", file, "to data.table complete:",
+                  date(), sep = " "))
+    dt
+}
+
+# cleans non-english words and performs a summation of ngrams
+clean_sum <- function(x, filename) {
+    message(paste("Starting summation of ngrams...", date(), sep = " "))
+    y <- x[, .(count = sum(count)), by = .(ngram)]
+    y <- arrange(y, desc(count))
+    message(paste("Summation of ngrams complete:", date(), sep = " "))
+    y <- as.data.table(y)
+    english <- NULL
+    message(paste("Searching for non-english ngrams...", date(), sep = " "))
+    for (i in letters) {
+        letter <- grep(i, y[[1]])
+        english <- c(english, letter)
     }
-    splits_df
+    english <- unique(english)
+    y <- y[english,]
+    message(paste("Removal of non-english ngrams complete:", date(), sep = " "))
+    saveRDS(y, file = filename)
+    message(paste("Saving of", filename, "complete:", date(), sep = " "))
+    rm(list = deparse(substitute(x)), pos = ".GlobalEnv")
+    message(paste("Removed object from workspace and", filename, "created:",
+                  date(), sep = " "))
 }
 
-blog_splits <- split_corpus(blog)
-news_splits <- split_corpus(news)
-twitter_splits <- split_corpus(twitter)
+unigram <- create_table("./ngrams/1gram.rds")
+clean_sum(unigram, "./ngrams/unigram.rds")
 
-iterate_token <- function(x, y, n) {
-    total_gram <- NULL
-    for (i in 1:nrow(x)) {
-        name <- as.character(x[i,1])
-        len <- as.integer(x[i,2]):as.integer(x[i,3])
-        z <- tokens_ngrams(y[len], n = n, concatenator = " ")
-        print(paste("Tokenization of", name, "complete...", sep = " "))
-        for (i in 1:length(z)) {
-            name_1 <- i
-            a <- as.character(z[i])
-            dt <- data.table(line = rep(i, length(a)), token = a)
-            total_gram <- rbind(total_gram, dt)
-            print(paste("Addition of token group", name_1,
-                        "to data table complete", sep = " "))
-        }
-    }
-    total_gram
-}
+bigram <- create_table("./ngrams/2gram.rds")
+clean_sum(bigram, "./ngrams/bigram.rds")
 
-# unigram
-blog_unigram <- iterate_token(blog_splits, blog_toks, 1)
-news_unigram <- iterate_token(news_splits, news_toks, 1)
-twitter_unigram <- iterate_token(twitter_splits, twitter_toks, 1)
+trigram <- create_table("./ngrams/3gram.rds")
+clean_sum(trigram, "./ngrams/trigram.rds")
 
-total_unigram <- rbind(blog_unigram, news_unigram, twitter_unigram)
+quadgram <- create_table("./ngrams/4gram.rds")
+clean_sum(quadgram, "./ngrams/quadgram.rds")
+
+quintgram <- create_table("./ngrams/5gram.rds")
+clean_sum(quintgram, "./ngrams/quintgram.rds")
+
+sextagram <- create_table("./ngrams/6gram.rds")
+clean_sum(sextagram, "./ngrams/sextagram.rds")
 
 
-
-
-uni_blog <- tokens_ngrams(blog_toks, n = 1)
-uni_news <- tokens_ngrams(news_toks, n = 1)
-uni_twitter <- tokens_ngrams(twitter_toks, n = 1)
-
-# bigram
-bi_blog <- tokens_ngrams(blog_toks, n = 2)
-bi_news <- tokens_ngrams(news_toks, n = 2)
-bi_twitter <- tokens_ngrams(twitter_toks, n = 2)
-
-# trigram
-tri_blog <- tokens_ngrams(blog_toks, n = 3)
-tri_news <- tokens_ngrams(news_toks, n = 3)
-tri_twitter <- tokens_ngrams(twitter_toks, n = 3)
-
-# quadgram
-quad_blog <- tokens_ngrams(blog_toks, n = 4)
-quad_news <- tokens_ngrams(news_toks, n = 4)
-quad_twitter <- tokens_ngrams(twitter_toks, n = 4)
-
-# quintgram
-quint_blog <- tokens_ngrams(blog_toks, n = 5)
-quint_news <- tokens_ngrams(news_toks, n = 5)
-quint_twitter <- tokens_ngrams(twitter_toks, n = 5)
-
-
-word_token <- function(y) {
-    df3 <- df2 %>% unnest_tokens(output = word, text, token = 'words')
-    df3
-}
-
-# tokenize each source then combine into one
-blog_df <- word_token(blog)
-news_df <- word_token(news)
-twitter_df <- word_token(twitter)
-
-total_word <- rbind(blog_df, news_df, twitter_df)
-
-# tokenize to ngram function that smaples 100,000 lines
-ngram_token <- function(y, n = 2) {
-    x <- sample(1:length(y), 100000)
-    z <- y[x]
-    df <- as_data_frame(z)
-    df2 <- mutate(df, line = rownames(df))
-    df2$line <- as.integer(df2$line)
-    df2 <- select(df2, line, value)
-    df2 <- rename(df2, text = value)
-    df3 <- df2 %>% unnest_tokens(output = ngram, text, token = 'ngrams', n = n)
-    df3
-}
-
-# bigram for each source then combine into one
-blog_bigram <- ngram_token(blog)
-news_bigram <- ngram_token(news)
-twitter_bigram <- ngram_token(twitter)
-
-total_bigram <- rbind(blog_bigram, news_bigram, twitter_bigram)
-
-# trigram each source then combine into one
-blog_trigram <- ngram_token(blog, n = 3)
-news_trigram <- ngram_token(news, n = 3)
-twitter_trigram <- ngram_token(twitter, n = 3)
-
-total_trigram <- rbind(blog_trigram, news_trigram, twitter_trigram)
-
-# quadgram each source then combine into one
-blog_quadgram <- ngram_token(blog, n = 4)
-news_quadgram <- ngram_token(news, n = 4)
-twitter_quadgram <- ngram_token(twitter, n = 4)
-
-total_quadgram <- rbind(blog_quadgram, news_quadgram, twitter_quadgram)
-
-# quintgram each source then combine into one
-blog_quintgram <- ngram_token(blog, n = 5)
-news_quintgram <- ngram_token(news, n = 5)
-twitter_quintgram <- ngram_token(twitter, n = 5)
-
-total_quintgram <- rbind(blog_quintgram, news_quintgram, twitter_quintgram)
