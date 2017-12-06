@@ -1,69 +1,34 @@
-source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
+setwd("/Users/marsh/data_science_coursera/JHU_capstone")
 
-# recall variables from setup.R
-## total_word
-## total_bigram
-## total_trigram
-## total_quadgram
-## total_quintgram
-
-# remove non-english words from all data sets
-remove_non_english <- function(x) {
-    english <- NULL
-    for (i in letters) {
-        letter <- grep(i, x[[2]])
-        english <- c(english, letter)
-    }
-    english <- unique(english)
-    x[english,]
-}
-
-word_df <- remove_non_english(total_word)
-bigram_df <- remove_non_english(total_bigram)
-trigram_df <- remove_non_english(total_trigram)
-quadgram_df <- remove_non_english(total_quadgram)
-quintgram_df <- remove_non_english(total_quintgram)
-
-# remove stop words from word_df only
-# word_df <- anti_join(word_df, stop_words)
-
-ordered_word <- count(word_df, word, sort = TRUE)
-ordered_bigram <- count(bigram_df, ngram, sort = TRUE)
-ordered_trigram <- count(trigram_df, ngram, sort = TRUE)
-ordered_quadgram <- count(quadgram_df, ngram, sort = TRUE)
-ordered_quintgram <- count(quintgram_df, ngram, sort = TRUE)
+unigram <- readRDS("./ngrams/unigram.rds")
+bigram <- readRDS("./ngrams/bigram.rds")
+trigram <- readRDS("./ngrams/trigram.rds")
+quadgram <- readRDS("./ngrams/quadgram.rds")
+quintgram <- readRDS("./ngrams/quintgram.rds")
+sextagram <- readRDS("./ngrams/sextag")
 
 add_tf <- function(x) {
-    y <- sum(x$n)
-    x <- mutate(x, term_freq = n/y)
-    x
+    y <- sum(x$count)
+    x <- mutate(x, term_freq = count/y)
+    as.data.table(x)
 }
 
-ordered_word <- add_tf(ordered_word)
+tf_unigram <- add_tf(unigram)
 ordered_bigram <- add_tf(ordered_bigram)
 ordered_trigram <- add_tf(ordered_trigram)
 ordered_quadgram <- add_tf(ordered_quadgram)
 ordered_quintgram <- add_tf(ordered_quintgram)
 
 # in order to improve performance, will reduce the data sets to only those 
-# tokens/ngrams that have a minimum count. (Since the count/term-frequence is so
+# tokens/ngrams that have a minimum count. (Since the count/term-frequency is so
 # low, the probability of my model choosing those ngrams is rather low, therefore
 # keeping them in the data set is a waste of memory)
 
-ordered_word <- subset(ordered_word, n >= quantile(ordered_word$n, probs = 0.90))
+ordered_word <- subset(tf_unigram, count >= quantile(tf_unigram$count, probs = 0.75))
 ordered_bigram <- subset(ordered_bigram, n >= quantile(ordered_bigram$n, probs = 0.90))
 ordered_trigram <- subset(ordered_trigram, n >= quantile(ordered_trigram$n, probs = 0.90))
 ordered_quadgram <- subset(ordered_quadgram, n >= quantile(ordered_quadgram$n, probs = 0.90))
 ordered_quintgram <- subset(ordered_quintgram, n >= quantile(ordered_quintgram$n, probs = 0.90))
-
-# remove non-total data sets to free RAM
-rm(
-    blog_df, news_df, twitter_df,
-    blog_bigram, news_bigram, twitter_bigram,
-    blog_trigram, news_trigram, twitter_trigram,
-    blog_quadgram, news_quadgram, twitter_quadgram,
-    blog_quintgram, news_quintgram, twitter_quintgram
-)
 
 sentence_to_word <- function(x) {
     df <- as_data_frame(x)

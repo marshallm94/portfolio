@@ -114,5 +114,3 @@ clean_sum(quintgram, "./ngrams/quintgram.rds")
 
 sextagram <- create_table("./ngrams/6gram.rds")
 clean_sum(sextagram, "./ngrams/sextagram.rds")
-
-

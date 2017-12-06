@@ -1,5 +1,4 @@
 setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
-source("/Users/marsh/data_science_coursera/JHU_capstone/setup.R")
 
 # Returns the top n words in pre-processed tibble x
 top_words <- function(x, title, n = 10, stopword = FALSE) {
