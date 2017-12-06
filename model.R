@@ -1,11 +1,45 @@
 setwd("/Users/marsh/data_science_coursera/JHU_capstone")
 
+clean_waste <- function(x) {
+    y <- quantile(x[[2]], probs = 0.75)
+    name <- deparse(substitute(x))
+    message(paste("Removing observations with counts <", y, "from", name, sep = " "))
+    z <- subset(x, x[[2]] >= y)
+    rm(list = name, pos = ".GlobalEnv")
+    message(paste(name, "removed from global environment"))
+    z
+}
+
+# clean files
 unigram <- readRDS("./ngrams/unigram.rds")
+clean_unigram <- clean_waste(unigram)
+saveRDS(clean_unigram, "./ngrams/clean_unigram.rds")
+rm(clean_unigram)
+
 bigram <- readRDS("./ngrams/bigram.rds")
+clean_bigram <- clean_waste(bigram)
+saveRDS(clean_bigram, "./ngrams/clean_bigram.rds")
+rm(clean_bigram)
+
 trigram <- readRDS("./ngrams/trigram.rds")
+clean_trigram <- clean_waste(trigram)
+saveRDS(clean_trigram, "./ngrams/clean_trigram.rds")
+rm(clean_trigram)
+
 quadgram <- readRDS("./ngrams/quadgram.rds")
+clean_quadgram <- clean_waste(quadgram)
+saveRDS(clean_quadgram, "./ngrams/clean_quadgram.rds")
+rm(clean_quadgram)
+
 quintgram <- readRDS("./ngrams/quintgram.rds")
-sextagram <- readRDS("./ngrams/sextag")
+clean_quintgram <- clean_waste(quintgram)
+saveRDS(clean_quintgram, "./ngrams/clean_quintgram.rds")
+rm(clean_quintgram)
+
+sextagram <- readRDS("./ngrams/sextagram.rds")
+clean_sextagram <- clean_waste(sextagram)
+saveRDS(clean_sextagram, "./ngrams/clean_sextagram.rds")
+rm(clean_sextagram)
 
 add_tf <- function(x) {
     y <- sum(x$count)
