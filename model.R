@@ -91,72 +91,46 @@ tokenize_test <- function(x, n) {
     search_for
 }
 
-######################### ENTER TEST SENTENCE/SEQUENCE HERE (as a character string)
-test <- "The guy in front of me just bought a pound of bacon, a bouquet, and a case of"
-#########################
-
-search_bigram <- tokenize_test(test, 1)
-search_trigram <- tokenize_test(test, 2)
-search_quadgram <- tokenize_test(test, 3)
-search_quintgram <- tokenize_test(test, 4)
-search_sextagram <- tokenize_test(test, 5)
-
-sexta_match <- head(subset(sextagram, base == search_sextagram), n = 5)
-quint_match <- head(subset(quintgram, base == search_quintgram), n = 5)
-quad_match <- head(subset(quadgram, base == search_quadgram), n = 5)
-tri_match <- head(subset(trigram, base == search_trigram), n = 5)
-bi_match <- head(subset(bigram, base == search_bigram), n = 5)
-
-# Stupid Backoff
-pred_dt <- NULL
-if (nrow(sexta_match) > 0) {
-    score <- sexta_match$count / sum(quint_match$count)
-    dt <- data.table(prediction = sexta_match$prediction, score = score)
-    pred_dt <- rbind(pred_dt, dt)
-} else if (nrow(quint_match) > 0) {
-    score1 <- 0.4 * quint_match$count / sum(quad_match$count)
-    dt1 <- data.table(prediction = quint_match$prediction, score = score1)
-    pred_dt <- rbind(pred_dt, dt, dt1)
-} else if (nrow(quad_match) > 0) {
-    score2 <- (0.4^2) * quad_match$count / sum(tri_match$count)
-    dt2 <- data.table(prediction = quad_match$prediction, score = score2)
-    pred_dt <- rbind(pred_dt, dt, dt1, dt2)
-} else if (nrow(tri_match) > 0) {
-    score3 <- (0.4^3) * tri_match$count / sum(bi_match$count)
-    dt3 <- data.table(prediction = tri_match$prediction, score = score2)
-    pred_dt <- rbind(pred_dt, dt, dt1, dt2, dt3)
-} else if (nrow(bi_match) > 0) {
-    score4 <- (0.4^4) * bi_match$count / sum(unigram$count)
-    dt4 <- data.table(prediction = bi_match$prediction, score = score4)
-    pred_dt <- rbind(pred_dt, dt, dt1, dt2, dt3, dt4)
+predict_word <- function(string, n = 10) {
+    test <- string
+    
+    search_bigram <- tokenize_test(test, 1)
+    search_trigram <- tokenize_test(test, 2)
+    search_quadgram <- tokenize_test(test, 3)
+    search_quintgram <- tokenize_test(test, 4)
+    search_sextagram <- tokenize_test(test, 5)
+    
+    sexta_match <- subset(sextagram, base == search_sextagram)
+    quint_match <- subset(quintgram, base == search_quintgram)
+    quad_match <- subset(quadgram, base == search_quadgram)
+    tri_match <- subset(trigram, base == search_trigram)
+    bi_match <- subset(bigram, base == search_bigram)
+    
+    # Stupid Backoff
+    pred_dt <- NULL
+    if (nrow(sexta_match) > 0) {
+        score <- sexta_match$count / sum(quint_match$count)
+        dt <- data.table(prediction = sexta_match$prediction, score = score)
+        pred_dt <- rbind(pred_dt, dt)
+    } else if (nrow(quint_match) > 0) {
+        score1 <- 0.4 * quint_match$count / sum(quad_match$count)
+        dt1 <- data.table(prediction = quint_match$prediction, score = score1)
+        pred_dt <- rbind(pred_dt, dt1)
+    } else if (nrow(quad_match) > 0) {
+        score2 <- (0.4^2) * quad_match$count / sum(tri_match$count)
+        dt2 <- data.table(prediction = quad_match$prediction, score = score2)
+        pred_dt <- rbind(pred_dt, dt2)
+    } else if (nrow(tri_match) > 0) {
+        score3 <- (0.4^3) * tri_match$count / sum(bi_match$count)
+        dt3 <- data.table(prediction = tri_match$prediction, score = score3)
+        pred_dt <- rbind(pred_dt, dt3)
+    } else if (nrow(bi_match) > 0) {
+        score4 <- (0.4^4) * bi_match$count / sum(unigram$count)
+        dt4 <- data.table(prediction = bi_match$prediction, score = score4)
+        pred_dt <- rbind(pred_dt, dt4)
+    }
+    
+    pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
+    final_dt <- arrange(pred_dt, desc(score))
+    head(final_dt, n = n)
 }
-
-pred_dt
-
-pred_dt <- NULL
-score <- sexta_match$count[1] / sum(quint_match$count)
-dt <- data.table(prediction = sexta_match$prediction[1], score = score)
-
-score1 <- 0.4 * quint_match$count[1] / sum(quad_match$count)
-dt1 <- data.table(prediction = quint_match$prediction[1], score = score1)
-
-score2 <- (0.4^2) * quad_match$count[1] / sum(tri_match$count)
-dt2 <- data.table(prediction = quad_match$prediction[1], score = score2)
-
-
-score3 <- (0.4^3) * tri_match$count[1] / sum(bi_match$count)
-dt3 <- data.table(prediction = tri_match$prediction[1], score = score3)
-
-score4 <- (0.4^4) * bi_match$count[1] / sum(unigram$count)
-dt4 <- data.table(prediction = bi_match$prediction[1], score = score4)
-pred_dt <- rbind(pred_dt, dt, dt1, dt2, dt3, dt4)
-
-final_dt <- subset(pred_dt, is.na(prediction) == FALSE)
-final_dt
-
-
-
-# for new/unseen ngrams in prediction model, if word predicted is wrong, input
-# entire sentence/sequence and add to file (add to data frame). For future calls
-# to function, give these user-inputed sequences more weight
-
