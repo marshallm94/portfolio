@@ -109,25 +109,35 @@ predict_word <- function(string, n = 10) {
     # Stupid Backoff
     pred_dt <- NULL
     if (nrow(sexta_match) > 0) {
-        score <- sexta_match$count / sum(quint_match$count)
+        score <- sexta_match$count / sum(subset(quintgram,
+                                                ngram == search_sextagram)$count)
         dt <- data.table(prediction = sexta_match$prediction, score = score)
         pred_dt <- rbind(pred_dt, dt)
     } else if (nrow(quint_match) > 0) {
-        score1 <- 0.4 * quint_match$count / sum(quad_match$count)
+        score1 <- 0.4 * quint_match$count / sum(subset(quadgram,
+                                                       ngram == search_quintgram)$count)
         dt1 <- data.table(prediction = quint_match$prediction, score = score1)
         pred_dt <- rbind(pred_dt, dt1)
     } else if (nrow(quad_match) > 0) {
-        score2 <- (0.4^2) * quad_match$count / sum(tri_match$count)
+        score2 <- (0.4^2) * quad_match$count / sum(subset(trigram,
+                                                          ngram == search_quadgram)$count)
         dt2 <- data.table(prediction = quad_match$prediction, score = score2)
         pred_dt <- rbind(pred_dt, dt2)
     } else if (nrow(tri_match) > 0) {
-        score3 <- (0.4^3) * tri_match$count / sum(bi_match$count)
+        score3 <- (0.4^3) * tri_match$count / sum(subset(bigram,
+                                                         ngram == search_trigram)$count)
         dt3 <- data.table(prediction = tri_match$prediction, score = score3)
         pred_dt <- rbind(pred_dt, dt3)
     } else if (nrow(bi_match) > 0) {
-        score4 <- (0.4^4) * bi_match$count / sum(unigram$count)
+        score4 <- (0.4^4) * bi_match$count / sum(subset(unigram,
+                                                        ngram == search_bigram)$count)
         dt4 <- data.table(prediction = bi_match$prediction, score = score4)
         pred_dt <- rbind(pred_dt, dt4)
+    } else {
+        message("No matches found; returning top 5 unigrams")
+        dt5 <- head(unigram, n = 5)
+        pred_dt <- rbind(pred_dt, dt5)
+        
     }
     
     pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
