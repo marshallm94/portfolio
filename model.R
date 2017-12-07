@@ -65,14 +65,25 @@ quadgram <- add_tf(quadgram)
 quintgram <- add_tf(quintgram)
 sextagram <- add_tf(sextagram)
 
-######################### ENTER TEST SENTENCE/SEQUENCE HERE
-a <- "You're the reason why I smile everyday. Can you follow me please? It would mean the"
+# separate ngram column into base and prediction columns
+sep_ngrams <- function(x) {
+    x$base <- gsub(" \\S*$", "", x$ngram)
+    x$prediction <- sub(".*\\s+", "", x$ngram)
+    x <- select(x, base, prediction, count, term_freq)
+}
+
+bigram <- sep_ngrams(bigram)
+trigram <- sep_ngrams(trigram)
+quadgram <- sep_ngrams(quadgram)
+quintgram <- sep_ngrams(quintgram)
+sextagram <- sep_ngrams(sextagram)
+
+######################### ENTER TEST SENTENCE/SEQUENCE HERE (as a character string)
+test <- "You're the reason why I smile everyday. Can you follow me please? It would mean the"
 #########################
 
 tokenize_test <- function(x, n) {
-    x <- a
-    n <- 2
-    tok <- tokens(a,
+    tok <- tokens(x,
                   remove_numbers = TRUE,
                   remove_punct = TRUE,
                   remove_symbols = TRUE,
@@ -84,48 +95,32 @@ tokenize_test <- function(x, n) {
     search_for
 }
 
+search_bigram <- tokenize_test(test, 1)
+search_trigram <- tokenize_test(test, 2)
+search_quadgram <- tokenize_test(test, 3)
+search_quintgram <- tokenize_test(test, 4)
+search_sextagram <- tokenize_test(test, 5)
 
-word_test <- sentence_to_word(a)
-bigram_test <- sentence_to_ngram(a, n = 2)
-trigram_test <- sentence_to_ngram(a, n = 3)
-quadgram_test <- sentence_to_ngram(a, n = 4)
+sexta_match <- subset(sextagram, base == search_sextagram)
+quint_match <- subset(quintgram, base == search_quintgram)
+quad_match <- subset(quadgram, base == search_quadgram)
+tri_match <- subset(trigram, base == search_trigram)
+bi_match <- subset(bigram, base == search_bigram)
 
-word_fragment <- word_test[nrow(word_test), 2]
-bigram_fragment <- bigram_test[nrow(bigram_test), 2]
-trigram_fragment <- trigram_test[nrow(trigram_test), 2]
-quadgram_fragment <- quadgram_test[nrow(quadgram_test), 2]
-
-search_word <- paste("^", word_fragment, " ", sep = "")
-search_bigram <- paste("^", word_fragment, " ", sep = "")
-search_trigram <- paste("^", bigram_fragment, " ", sep = "")
-search_quadgram <- paste("^", trigram_fragment, " ", sep = "")
-search_quintgram <- paste("^", quadgram_fragment, " ", sep = "")
-
-# remove non-essential data sets to free up RAM
-rm(word_fragment, word_test,
-   bigram_fragment, bigram_test,
-   trigram_fragment, trigram_test,
-   quadgram_fragment, quadgram_test,
-   quintgram_fragment, quintgram_test)
-
-fragment_search <- function(x, y) {
-    indices <- grep(x, y[[1]])
-    df_dist <- y[indices,]
-    topx <- df_dist[,]
-    topx
+# Stupid Backoff
+if (nrow(sexta_match) > 0) {
+    score <- sexta_match$count[1] / sum(quint_match$count)
+} else if (nrow(quint_match) > 0) {
+    score <- quint_match$count[1] / sum(quad_match$count)
+} else if (nrow(quad_match) > 0) {
+    score <- quad_match$count[1] / sum(tri_match$count)
 }
 
-quint_match <- fragment_search(search_quintgram, ordered_quintgram)
-quad_match <- fragment_search(search_quadgram, ordered_quadgram)
-tri_match <- fragment_search(search_trigram, ordered_trigram)
-bi_match <- fragment_search(search_bigram, ordered_bigram)
-word_match <- fragment_search(search_word, ordered_word)
-
 scores <- NULL
-quint_match[1,2] / sum(quad_match$n)
-0.4 * quad_match[1,2] / sum(tri_match$n)
-0.4 * 0.4 * tri_match[1,2] / sum(bi_match$n)
-0.4 * 0.4 * 0.4 * bi_match[1,2] / sum()
+quint_match[1,3] / sum(quad_match$n)
+0.4 * quad_match[1,3] / sum(tri_match$n)
+0.4 * 0.4 * tri_match[1,3] / sum(bi_match$n)
+0.4 * 0.4 * 0.4 * bi_match[1,3] / sum()
 # for new/unseen ngrams in prediction model, if word predicted is wrong, input
 # entire sentence/sequence and add to file (add to data frame). For future calls
 # to function, give these user-inputed sequences more weight
