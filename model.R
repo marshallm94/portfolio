@@ -135,8 +135,9 @@ predict_word <- function(string, n = 10) {
         pred_dt <- rbind(pred_dt, dt4)
     } else {
         message("No matches found; returning top 5 unigrams")
-        dt5 <- head(unigram, n = 5)
-        pred_dt <- rbind(pred_dt, dt5)
+        dt5 <- select(unigram, ngram)
+        dt5 <- rename(dt5, prediction = ngram) %>% mutate(score = NA)
+        pred_dt <- head(rbind(pred_dt, dt5), n = 5)
         
     }
     
