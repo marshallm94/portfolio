@@ -80,7 +80,7 @@ sextagram <- readRDS("./ngrams/total_sextagram.rds")
 sep_ngrams <- function(x) {
     x$base <- gsub(" \\S*$", "", x$ngram)
     x$prediction <- sub(".*\\s+", "", x$ngram)
-    x <- select(x, ngram, base, prediction, count, term_freq)
+    x <- select(x, ngram, base, prediction, count)
 }
 
 bigram <- sep_ngrams(bigram)
@@ -102,6 +102,8 @@ tokenize_test <- function(x, n) {
     search_for
 }
 
+test <- "Every inch of you is perfect from the bottom to the"
+
 predict_word <- function(string, n = 10) {
     test <- string
     
@@ -111,11 +113,11 @@ predict_word <- function(string, n = 10) {
     search_quintgram <- tokenize_test(test, 4)
     search_sextagram <- tokenize_test(test, 5)
     
-    sexta_match <- subset(sextagram, base == search_sextagram)
-    quint_match <- subset(quintgram, base == search_quintgram)
-    quad_match <- subset(quadgram, base == search_quadgram)
-    tri_match <- subset(trigram, base == search_trigram)
-    bi_match <- subset(bigram, base == search_bigram)
+    sexta_match <- arrange(subset(sextagram, base == search_sextagram), desc(count))
+    quint_match <- arrange(subset(quintgram, base == search_quintgram), desc(count))
+    quad_match <- arrange(subset(quadgram, base == search_quadgram), desc(count))
+    tri_match <- arrange(subset(trigram, base == search_trigram), desc(count))
+    bi_match <- arrange(subset(bigram, base == search_bigram), desc(count))
     
     # Stupid Backoff
     pred_dt <- NULL
@@ -152,7 +154,9 @@ predict_word <- function(string, n = 10) {
         
     }
     
+    
+    
     pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
-    final_dt <- arrange(pred_dt, desc(score))
+    final_dt <- as.data.table(arrange(pred_dt, desc(score)))
     head(final_dt, n = n)
 }
