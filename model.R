@@ -13,31 +13,6 @@ clean_waste <- function(x, n = 5) {
     z
 }
 
-clean_bind <- function(file_1, file_2, final_file) {
-    message(paste("Reading", file_1, "into workspace:", date(), sep = " "))
-    object_x <- readRDS(file_1)
-    message(paste("Reading", file_2, "into workspace:", date(), sep = " "))
-    object_y <- readRDS(file_2)
-    message(paste("Binding", file_1, "object and", file_2, "object together:",
-                  date(), sep = " "))
-    bind_file <- rbind(object_x, object_y)
-    message(paste("Cleaning unnecessary ngrams from final object:",
-                  date(), sep = " "))
-    bind_file <- clean_waste(bind_file)
-    message(paste("Cleaning complete; saving object to", final_file, ":",
-                  date(), sep = " "))
-    saveRDS(bind_file, final_file)
-    message(paste("Object successfully saved to", final_file, ":",
-                  date(), sep = " "))
-}
-
-clean_bind("./ngrams/unigram.rds", "./ngrams/unigram_2.rds", "./ngrams/total_unigram.rds")
-clean_bind("./ngrams/bigram.rds", "./ngrams/bigram_2.rds", "./ngrams/total_bigram.rds")
-clean_bind("./ngrams/trigram.rds", "./ngrams/trigram_2.rds", "./ngrams/total_trigram.rds")
-clean_bind("./ngrams/quadgram.rds", "./ngrams/quadgram_2.rds", "./ngrams/total_quadgram.rds")
-clean_bind("./ngrams/quintgram.rds", "./ngrams/quintgram_2.rds", "./ngrams/total_quintgram.rds")
-clean_bind("./ngrams/sextagram.rds", "./ngrams/sextagram_2.rds", "./ngrams/total_sextagram.rds")
-
 # clean unnecessary ngrams in files
 unigram <- readRDS("./ngrams/unigram.rds")
 clean_unigram <- clean_waste(unigram, 5)
@@ -69,12 +44,12 @@ clean_sextagram <- clean_waste(sextagram, 5)
 saveRDS(clean_sextagram, "./ngrams/clean_sextagram.rds")
 rm(clean_sextagram)
 
-unigram <- readRDS("./ngrams/total_unigram.rds")
-bigram <- readRDS("./ngrams/total_bigram.rds")
-trigram <- readRDS("./ngrams/total_trigram.rds")
-quadgram <- readRDS("./ngrams/total_quadgram.rds")
-quintgram <- readRDS("./ngrams/total_quintgram.rds")
-sextagram <- readRDS("./ngrams/total_sextagram.rds")
+unigram <- readRDS("./ngrams/clean_unigram.rds")
+bigram <- readRDS("./ngrams/clean_bigram.rds")
+trigram <- readRDS("./ngrams/clean_trigram.rds")
+quadgram <- readRDS("./ngrams/clean_quadgram.rds")
+quintgram <- readRDS("./ngrams/clean_quintgram.rds")
+sextagram <- readRDS("./ngrams/clean_sextagram.rds")
 
 # separate ngram column into base and prediction columns
 sep_ngrams <- function(x) {
@@ -153,8 +128,6 @@ predict_word <- function(string, n = 10) {
         pred_dt <- head(rbind(pred_dt, dt5), n = 5)
         
     }
-    
-    
     
     pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
     final_dt <- as.data.table(arrange(pred_dt, desc(score)))
