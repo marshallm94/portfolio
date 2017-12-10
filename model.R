@@ -69,25 +69,12 @@ clean_sextagram <- clean_waste(sextagram, 5)
 saveRDS(clean_sextagram, "./ngrams/clean_sextagram.rds")
 rm(clean_sextagram)
 
-unigram <- readRDS("./ngrams/clean_unigram.rds")
-bigram <- readRDS("./ngrams/clean_bigram.rds")
-trigram <- readRDS("./ngrams/clean_trigram.rds")
-quadgram <- readRDS("./ngrams/clean_quadgram.rds")
-quintgram <- readRDS("./ngrams/clean_quintgram.rds")
-sextagram <- readRDS("./ngrams/clean_sextagram.rds")
-
-add_tf <- function(x) {
-    y <- sum(x[[2]])
-    x <- mutate(x, term_freq = count/y)
-    as.data.table(x)
-}
-
-unigram <- add_tf(unigram)
-bigram <- add_tf(bigram)
-trigram <- add_tf(trigram)
-quadgram <- add_tf(quadgram)
-quintgram <- add_tf(quintgram)
-sextagram <- add_tf(sextagram)
+unigram <- readRDS("./ngrams/total_unigram.rds")
+bigram <- readRDS("./ngrams/total_bigram.rds")
+trigram <- readRDS("./ngrams/total_trigram.rds")
+quadgram <- readRDS("./ngrams/total_quadgram.rds")
+quintgram <- readRDS("./ngrams/total_quintgram.rds")
+sextagram <- readRDS("./ngrams/total_sextagram.rds")
 
 # separate ngram column into base and prediction columns
 sep_ngrams <- function(x) {
