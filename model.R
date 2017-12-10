@@ -1,11 +1,10 @@
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(quanteda))
 suppressPackageStartupMessages(library(data.table))
-suppressPackageStartupMessages(library(sqldf))
 
 setwd("/Users/marsh/data_science_coursera/JHU_capstone")
 
-clean_waste <- function(x, n) {
+clean_waste <- function(x, n = 5) {
     name <- deparse(substitute(x))
     message(paste("Removing observations with counts <", n, "from", name, sep = " "))
     z <- subset(x, x[[2]] >= n)
@@ -13,6 +12,31 @@ clean_waste <- function(x, n) {
     message(paste(name, "removed from global environment"))
     z
 }
+
+clean_bind <- function(file_1, file_2, final_file) {
+    message(paste("Reading", file_1, "into workspace:", date(), sep = " "))
+    object_x <- readRDS(file_1)
+    message(paste("Reading", file_2, "into workspace:", date(), sep = " "))
+    object_y <- readRDS(file_2)
+    message(paste("Binding", file_1, "object and", file_2, "object together:",
+                  date(), sep = " "))
+    bind_file <- rbind(object_x, object_y)
+    message(paste("Cleaning unnecessary ngrams from final object:",
+                  date(), sep = " "))
+    bind_file <- clean_waste(bind_file)
+    message(paste("Cleaning complete; saving object to", final_file, ":",
+                  date(), sep = " "))
+    saveRDS(bind_file, final_file)
+    message(paste("Object successfully saved to", final_file, ":",
+                  date(), sep = " "))
+}
+
+clean_bind("./ngrams/unigram.rds", "./ngrams/unigram_2.rds", "./ngrams/total_unigram.rds")
+clean_bind("./ngrams/bigram.rds", "./ngrams/bigram_2.rds", "./ngrams/total_bigram.rds")
+clean_bind("./ngrams/trigram.rds", "./ngrams/trigram_2.rds", "./ngrams/total_trigram.rds")
+clean_bind("./ngrams/quadgram.rds", "./ngrams/quadgram_2.rds", "./ngrams/total_quadgram.rds")
+clean_bind("./ngrams/quintgram.rds", "./ngrams/quintgram_2.rds", "./ngrams/total_quintgram.rds")
+clean_bind("./ngrams/sextagram.rds", "./ngrams/sextagram_2.rds", "./ngrams/total_sextagram.rds")
 
 # clean unnecessary ngrams in files
 unigram <- readRDS("./ngrams/unigram.rds")
