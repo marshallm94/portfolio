@@ -14,7 +14,7 @@ shinyUI(
                 textInput("ngram",
                           "Enter text here",
                           placeholder = "Once upon a time"),
-                textOutput("prediction")
+                tableOutput("prediction")
             )
         )
     )

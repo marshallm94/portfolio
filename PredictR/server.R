@@ -4,6 +4,8 @@ shinyServer(function(input, output) {
     suppressPackageStartupMessages(library(quanteda))
     suppressPackageStartupMessages(library(data.table))
     
+    setwd("/Users/marsh/data_science_coursera/JHU_capstone/")
+    
     # load files
     unigram <- reactive({
         readRDS("./PredictR/unigram_final.rds")
@@ -54,30 +56,30 @@ shinyServer(function(input, output) {
         
         # Stupid Backoff
         pred_dt <- NULL
-        if (nrow(sexta_match()) > 0) {
-            score <- sexta_match()$count / sum(subset(quintgram(),
-                                                    ngram == search_sextagram())$count)
-            dt <- data.table(prediction = sexta_match()$prediction, score = score)
+        if (nrow(sexta_match) > 0) {
+            score <- sexta_match$count / sum(subset(quintgram(),
+                                                    ngram == search_sextagram)$count)
+            dt <- data.table(prediction = sexta_match$prediction, score = score)
             pred_dt <- rbind(pred_dt, dt)
-        } else if (nrow(quint_match()) > 0) {
-            score1 <- 0.4 * quint_match()$count / sum(subset(quadgram(),
-                                                           ngram == search_quintgram())$count)
-            dt1 <- data.table(prediction = quint_match()$prediction, score = score1)
+        } else if (nrow(quint_match) > 0) {
+            score1 <- 0.4 * quint_match$count / sum(subset(quadgram(),
+                                                           ngram == search_quintgram)$count)
+            dt1 <- data.table(prediction = quint_match$prediction, score = score1)
             pred_dt <- rbind(pred_dt, dt1)
-        } else if (nrow(quad_match()) > 0) {
-            score2 <- (0.4^2) * quad_match()$count / sum(subset(trigram(),
-                                                              ngram == search_quadgram())$count)
-            dt2 <- data.table(prediction = quad_match()$prediction, score = score2)
+        } else if (nrow(quad_match) > 0) {
+            score2 <- (0.4^2) * quad_match$count / sum(subset(trigram(),
+                                                              ngram == search_quadgram)$count)
+            dt2 <- data.table(prediction = quad_match$prediction, score = score2)
             pred_dt <- rbind(pred_dt, dt2)
-        } else if (nrow(tri_match()) > 0) {
-            score3 <- (0.4^3) * tri_match()$count / sum(subset(bigram(),
-                                                             ngram == search_trigram())$count)
-            dt3 <- data.table(prediction = tri_match()$prediction, score = score3)
+        } else if (nrow(tri_match) > 0) {
+            score3 <- (0.4^3) * tri_match$count / sum(subset(bigram(),
+                                                             ngram == search_trigram)$count)
+            dt3 <- data.table(prediction = tri_match$prediction, score = score3)
             pred_dt <- rbind(pred_dt, dt3)
-        } else if (nrow(bi_match()) > 0) {
-            score4 <- (0.4^4) * bi_match()$count / sum(subset(unigram(),
-                                                            ngram == search_bigram())$count)
-            dt4 <- data.table(prediction = bi_match()$prediction, score = score4)
+        } else if (nrow(bi_match) > 0) {
+            score4 <- (0.4^4) * bi_match$count / sum(subset(unigram(),
+                                                            ngram == search_bigram)$count)
+            dt4 <- data.table(prediction = bi_match$prediction, score = score4)
             pred_dt <- rbind(pred_dt, dt4)
         } else {
             message("No matches found; returning top 5 unigrams")
@@ -96,7 +98,7 @@ shinyServer(function(input, output) {
         input$ngram
     })
     
-    output$prediction <- renderText({
+    output$prediction <- renderTable({
         predict_word(string())
     })
 }
