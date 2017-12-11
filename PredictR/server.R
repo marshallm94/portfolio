@@ -5,14 +5,25 @@ shinyServer(function(input, output) {
     suppressPackageStartupMessages(library(data.table))
     
     # load files
-    unigram <- readRDS("./ngrams/unigram_final.rds")
-    bigram <- readRDS("./ngrams/bigram_final.rds")
-    trigram <- readRDS("./ngrams/trigram_final.rds")
-    quadgram <- readRDS("./ngrams/quadgram_final.rds")
-    quintgram <- readRDS("./ngrams/quintgram_final.rds")
-    sextagram <- readRDS("./ngrams/sextagram_final.rds")
+    unigram <- reactive({
+        readRDS("./PredictR/unigram_final.rds")
+    })
+    bigram <- reactive({
+        readRDS("./PredictR/bigram_final.rds")
+    })
+    trigram <- reactive({
+        readRDS("./PredictR/trigram_final.rds")
+    })
+    quadgram <- reactive({
+        readRDS("./PredictR/quadgram_final.rds")
+    })
+    quintgram <- reactive({
+        readRDS("./PredictR/quintgram_final.rds")
+    })
+    sextagram <- reactive({
+        readRDS("./PredictR/sextagram_final.rds")
+    })
     
-    # Functions
     tokenize_test <- function(x, n) {
         tok <- tokens(x,
                       remove_numbers = TRUE,
@@ -35,42 +46,42 @@ shinyServer(function(input, output) {
         search_quintgram <- tokenize_test(test, 4)
         search_sextagram <- tokenize_test(test, 5)
         
-        sexta_match <- arrange(subset(sextagram, base == search_sextagram), desc(count))
-        quint_match <- arrange(subset(quintgram, base == search_quintgram), desc(count))
-        quad_match <- arrange(subset(quadgram, base == search_quadgram), desc(count))
-        tri_match <- arrange(subset(trigram, base == search_trigram), desc(count))
-        bi_match <- arrange(subset(bigram, base == search_bigram), desc(count))
+        sexta_match <- arrange(subset(sextagram(), base == search_sextagram), desc(count))
+        quint_match <- arrange(subset(quintgram(), base == search_quintgram), desc(count))
+        quad_match <- arrange(subset(quadgram(), base == search_quadgram), desc(count))
+        tri_match <- arrange(subset(trigram(), base == search_trigram), desc(count))
+        bi_match <- arrange(subset(bigram(), base == search_bigram), desc(count))
         
         # Stupid Backoff
         pred_dt <- NULL
-        if (nrow(sexta_match) > 0) {
-            score <- sexta_match$count / sum(subset(quintgram,
-                                                    ngram == search_sextagram)$count)
-            dt <- data.table(prediction = sexta_match$prediction, score = score)
+        if (nrow(sexta_match()) > 0) {
+            score <- sexta_match()$count / sum(subset(quintgram(),
+                                                    ngram == search_sextagram())$count)
+            dt <- data.table(prediction = sexta_match()$prediction, score = score)
             pred_dt <- rbind(pred_dt, dt)
-        } else if (nrow(quint_match) > 0) {
-            score1 <- 0.4 * quint_match$count / sum(subset(quadgram,
-                                                           ngram == search_quintgram)$count)
-            dt1 <- data.table(prediction = quint_match$prediction, score = score1)
+        } else if (nrow(quint_match()) > 0) {
+            score1 <- 0.4 * quint_match()$count / sum(subset(quadgram(),
+                                                           ngram == search_quintgram())$count)
+            dt1 <- data.table(prediction = quint_match()$prediction, score = score1)
             pred_dt <- rbind(pred_dt, dt1)
-        } else if (nrow(quad_match) > 0) {
-            score2 <- (0.4^2) * quad_match$count / sum(subset(trigram,
-                                                              ngram == search_quadgram)$count)
-            dt2 <- data.table(prediction = quad_match$prediction, score = score2)
+        } else if (nrow(quad_match()) > 0) {
+            score2 <- (0.4^2) * quad_match()$count / sum(subset(trigram(),
+                                                              ngram == search_quadgram())$count)
+            dt2 <- data.table(prediction = quad_match()$prediction, score = score2)
             pred_dt <- rbind(pred_dt, dt2)
-        } else if (nrow(tri_match) > 0) {
-            score3 <- (0.4^3) * tri_match$count / sum(subset(bigram,
-                                                             ngram == search_trigram)$count)
-            dt3 <- data.table(prediction = tri_match$prediction, score = score3)
+        } else if (nrow(tri_match()) > 0) {
+            score3 <- (0.4^3) * tri_match()$count / sum(subset(bigram(),
+                                                             ngram == search_trigram())$count)
+            dt3 <- data.table(prediction = tri_match()$prediction, score = score3)
             pred_dt <- rbind(pred_dt, dt3)
-        } else if (nrow(bi_match) > 0) {
-            score4 <- (0.4^4) * bi_match$count / sum(subset(unigram,
-                                                            ngram == search_bigram)$count)
-            dt4 <- data.table(prediction = bi_match$prediction, score = score4)
+        } else if (nrow(bi_match()) > 0) {
+            score4 <- (0.4^4) * bi_match()$count / sum(subset(unigram(),
+                                                            ngram == search_bigram())$count)
+            dt4 <- data.table(prediction = bi_match()$prediction, score = score4)
             pred_dt <- rbind(pred_dt, dt4)
         } else {
             message("No matches found; returning top 5 unigrams")
-            dt5 <- select(unigram, ngram)
+            dt5 <- select(unigram(), ngram)
             dt5 <- rename(dt5, prediction = ngram) %>% mutate(score = NA)
             pred_dt <- head(rbind(pred_dt, dt5), n = 5)
             
@@ -80,6 +91,13 @@ shinyServer(function(input, output) {
         final_dt <- as.data.table(arrange(pred_dt, desc(score)))
         head(final_dt, n = n)
     }
-    # Reactive statements
+    
+    string <- reactive({
+        input$ngram
+    })
+    
+    output$prediction <- renderText({
+        predict_word(string())
+    })
 }
 )

@@ -59,17 +59,17 @@ sep_ngrams <- function(x) {
 }
 
 # save final data sets
-saveRDS(unigram, "./ngrams/unigram_final.rds")
+saveRDS(unigram, "./PredictR/unigram_final.rds")
 bigram <- sep_ngrams(bigram)
-saveRDS(bigram, "./ngrams/bigram_final.rds")
+saveRDS(bigram, "./PredictR/bigram_final.rds")
 trigram <- sep_ngrams(trigram)
-saveRDS(trigram, "./ngrams/trigram_final.rds")
+saveRDS(trigram, "./PredictR/trigram_final.rds")
 quadgram <- sep_ngrams(quadgram)
-saveRDS(quadgram, "./ngrams/quadgram_final.rds")
+saveRDS(quadgram, "./PredictR/quadgram_final.rds")
 quintgram <- sep_ngrams(quintgram)
-saveRDS(quintgram, "./ngrams/quintgram_final.rds")
+saveRDS(quintgram, "./PredictR/quintgram_final.rds")
 sextagram <- sep_ngrams(sextagram)
-saveRDS(sextagram, "./ngrams/sextagram_final.rds")
+saveRDS(sextagram, "./PredictR/sextagram_final.rds")
 
 tokenize_test <- function(x, n) {
     tok <- tokens(x,
