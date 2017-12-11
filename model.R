@@ -58,11 +58,18 @@ sep_ngrams <- function(x) {
     x <- select(x, ngram, base, prediction, count)
 }
 
+# save final data sets
+saveRDS(unigram, "./ngrams/unigram_final.rds")
 bigram <- sep_ngrams(bigram)
+saveRDS(bigram, "./ngrams/bigram_final.rds")
 trigram <- sep_ngrams(trigram)
+saveRDS(trigram, "./ngrams/trigram_final.rds")
 quadgram <- sep_ngrams(quadgram)
+saveRDS(quadgram, "./ngrams/quadgram_final.rds")
 quintgram <- sep_ngrams(quintgram)
+saveRDS(quintgram, "./ngrams/quintgram_final.rds")
 sextagram <- sep_ngrams(sextagram)
+saveRDS(sextagram, "./ngrams/sextagram_final.rds")
 
 tokenize_test <- function(x, n) {
     tok <- tokens(x,
@@ -76,8 +83,6 @@ tokenize_test <- function(x, n) {
     search_for <- unname(tail(unlisted, n = 1))
     search_for
 }
-
-test <- "Every inch of you is perfect from the bottom to the"
 
 predict_word <- function(string, n = 10) {
     test <- string

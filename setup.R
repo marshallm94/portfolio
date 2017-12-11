@@ -39,11 +39,9 @@ system.time(corp_tokens <- tokens(sample_corp,
 
 gc()
 
-# December 9, 2017: adding a "_2" at the end of filename for future binding of 
-# original ngram files and part 2 ngram files for larger data set
 create_ngram <- function(tokens, n) {
     current_name <- paste(n, "gram", sep = "")
-    filename <- paste("./ngrams/", n, "gram_2.rds", sep = "")
+    filename <- paste("./ngrams/", n, "gram.rds", sep = "")
     
     message(paste("Starting", current_name, "creation...", date(), sep = " "))
     name <- tokens_ngrams(tokens, n, concatenator = " ")
@@ -101,20 +99,20 @@ clean_sum <- function(x, filename) {
                   date(), sep = " "))
 }
 
-unigram <- create_table("./ngrams/1gram_2.rds")
-clean_sum(unigram, "./ngrams/unigram_2.rds")
+unigram <- create_table("./ngrams/1gram.rds")
+clean_sum(unigram, "./ngrams/unigram.rds")
 
-bigram <- create_table("./ngrams/2gram_2.rds")
-clean_sum(bigram, "./ngrams/bigram_2.rds")
+bigram <- create_table("./ngrams/2gram.rds")
+clean_sum(bigram, "./ngrams/bigram.rds")
 
-trigram <- create_table("./ngrams/3gram_2.rds")
-clean_sum(trigram, "./ngrams/trigram_2.rds")
+trigram <- create_table("./ngrams/3gram.rds")
+clean_sum(trigram, "./ngrams/trigram.rds")
 
-quadgram <- create_table("./ngrams/4gram_2.rds")
-clean_sum(quadgram, "./ngrams/quadgram_2.rds")
+quadgram <- create_table("./ngrams/4gram.rds")
+clean_sum(quadgram, "./ngrams/quadgram.rds")
 
-quintgram <- create_table("./ngrams/5gram_2.rds")
-clean_sum(quintgram, "./ngrams/quintgram_2.rds")
+quintgram <- create_table("./ngrams/5gram.rds")
+clean_sum(quintgram, "./ngrams/quintgram.rds")
 
-sextagram <- create_table("./ngrams/6gram_2.rds")
-clean_sum(sextagram, "./ngrams/sextagram_2.rds")
+sextagram <- create_table("./ngrams/6gram.rds")
+clean_sum(sextagram, "./ngrams/sextagram.rds")
