@@ -20,6 +20,11 @@ twitter <- getfile("twitter")
 
 setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 
+profanity <- read.csv("./data/profanity.csv")
+profanity <- as.character(profanity$Your.Gateway.to.the.Chrisitan.Audience)
+profanity <- profanity[4:length(profanity)]
+profanity <- gsub(",$","", profanity)
+
 total <- c(blog, news, twitter)
 
 set.seed(10,000)
