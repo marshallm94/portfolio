@@ -39,7 +39,7 @@ shinyServer(function(input, output) {
         search_for
     }
     
-    predict_word <- function(string, n = 10) {
+    predict_word <- function(string, n = 5) {
         test <- string
         
         search_bigram <- tokenize_test(test, 1)
@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
         } else {
             message("No matches found; returning top 5 unigrams")
             dt5 <- select(unigram(), ngram)
-            dt5 <- rename(dt5, prediction = ngram) %>% mutate(score = NA)
+            dt5 <- dplyr::rename(dt5, prediction = ngram) %>% mutate(score = NA)
             pred_dt <- head(rbind(pred_dt, dt5), n = 5)
             
         }
