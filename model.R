@@ -131,7 +131,6 @@ predict_word <- function(string, n = 10) {
         dt5 <- select(unigram, ngram)
         dt5 <- rename(dt5, prediction = ngram) %>% mutate(score = NA)
         pred_dt <- head(rbind(pred_dt, dt5), n = 5)
-        
     }
     
     pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)

@@ -7,24 +7,12 @@ shinyServer(function(input, output) {
     setwd("/Users/marsh/data_science_coursera/JHU_capstone/")
     
     # load files
-    unigram <- reactive({
-        readRDS("./PredictR/unigram_final.rds")
-    })
-    bigram <- reactive({
-        readRDS("./PredictR/bigram_final.rds")
-    })
-    trigram <- reactive({
-        readRDS("./PredictR/trigram_final.rds")
-    })
-    quadgram <- reactive({
-        readRDS("./PredictR/quadgram_final.rds")
-    })
-    quintgram <- reactive({
-        readRDS("./PredictR/quintgram_final.rds")
-    })
-    sextagram <- reactive({
-        readRDS("./PredictR/sextagram_final.rds")
-    })
+    unigram <- reactive({ readRDS("./PredictR/unigram_final.rds") })
+    bigram <- reactive({ readRDS("./PredictR/bigram_final.rds") })
+    trigram <- reactive({ readRDS("./PredictR/trigram_final.rds") })
+    quadgram <- reactive({ readRDS("./PredictR/quadgram_final.rds") })
+    quintgram <- reactive({ readRDS("./PredictR/quintgram_final.rds") })
+    sextagram <- reactive({ readRDS("./PredictR/sextagram_final.rds") })
     
     tokenize_test <- function(x, n) {
         tok <- tokens(x,
@@ -39,7 +27,7 @@ shinyServer(function(input, output) {
         search_for
     }
     
-    predict_word <- function(string, n = 5) {
+    predict_word <- function(string, number_of_words) {
         test <- string
         
         search_bigram <- tokenize_test(test, 1)
@@ -82,24 +70,22 @@ shinyServer(function(input, output) {
             dt4 <- data.table(prediction = bi_match$prediction, score = score4)
             pred_dt <- rbind(pred_dt, dt4)
         } else {
-            message("No matches found; returning top 5 unigrams")
-            dt5 <- select(unigram(), ngram)
-            dt5 <- dplyr::rename(dt5, prediction = ngram) %>% mutate(score = NA)
-            pred_dt <- head(rbind(pred_dt, dt5), n = 5)
-            
+            message(paste("No matches found; returning top", number_of_words, "unigrams", sep = " "))
         }
-        
+        dt5 <- select(unigram(), ngram)
+        dt5 <- dplyr::rename(dt5, prediction = ngram) %>% mutate(score = NA)
+        pred_dt <- rbind(pred_dt, dt5)
         pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
         final_dt <- as.data.table(arrange(pred_dt, desc(score)))
-        head(final_dt, n = n)
+        head(final_dt, n = number_of_words)
     }
     
-    string <- reactive({
-        input$ngram
-    })
+    number <- reactive({ input$dropdown })
+    
+    string <- reactive({ input$ngram })
     
     output$prediction <- renderTable({
-        predict_word(string())
+        predict_word(string(), number_of_words = number())
     })
 }
 )
