@@ -34,6 +34,9 @@ for (i in 1:length(profanity)) {
                   sep = " "))
 }
 
+saveRDS(total, "./data/non_profane_total.rds")
+total <- readRDS("./data/non_profane_total.rds")
+
 set.seed(10000)
 
 sample_set <- sample(1:length(total), length(total)/4)
