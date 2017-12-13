@@ -64,9 +64,6 @@ create_ngram <- function(tokens, n) {
     
     saveRDS(name, file = filename)
     message(paste("Saving of", filename, "complete:", date(), sep = " "))
-    
-    rm(name)
-    message(paste(current_name, "removed from workspace:", date(), sep = " "))
 }
 
 create_ngram(corp_tokens, 6)
