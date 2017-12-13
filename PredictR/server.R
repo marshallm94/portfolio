@@ -77,7 +77,11 @@ shinyServer(function(input, output) {
         pred_dt <- rbind(pred_dt, dt5)
         pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
         final_dt <- as.data.table(arrange(pred_dt, desc(score)))
-        head(final_dt, n = number_of_words)
+        if (number_of_words == 0) {
+            print("no input detected")
+        } else {
+            final_dt[1:number_of_words, 1]
+        }
     }
     
     number <- reactive({ input$dropdown })
