@@ -23,27 +23,29 @@ setwd('/Users/marsh/data_science_coursera/JHU_capstone/')
 profanity <- read.csv("./data/profanity.csv")
 profanity <- as.character(profanity$Your.Gateway.to.the.Chrisitan.Audience)
 profanity <- profanity[4:length(profanity)]
-profanity <- gsub(",$"," ", profanity)
-profanity <- gsub("^", " ", profanity)
+profanity <- gsub(",$","", profanity)
+profanity <- gsub("^", "", profanity)
 
 total <- c(blog, news, twitter)
 
+set.seed(10000)
+sample_size <- sample(1:length(total), length(total)/4)
+sample_set <- total[sample_size]
+
+rm(blog, news, twitter, total, sample_size)
+
 for (i in 1:length(profanity)) {
-    total <- gsub(profanity[i], "", total, ignore.case = TRUE)
-    message(paste("All instances of", profanity[i], "removed from total:", date(),
+    sample_set <- gsub(profanity[i], " ", sample_set, ignore.case = TRUE)
+    message(paste("All instances of", profanity[i], "removed from sample_set:", date(),
                   sep = " "))
 }
 
-saveRDS(total, "./data/non_profane_total.rds")
-total <- readRDS("./data/non_profane_total.rds")
+saveRDS(sample_set, "./data/non_profane_sample.rds")
+sample_set <- readRDS("./data/non_profane_sample.rds")
 
-set.seed(10000)
+system.time(sample_corp <- corpus(sample_set))
 
-sample_set <- sample(1:length(total), length(total)/4)
-
-system.time(sample_corp <- corpus(total[sample_set]))
-
-rm(blog, news, twitter, sample_set, total, profanity)
+rm(sample_set, profanity)
 
 system.time(corp_tokens <- tokens(sample_corp,
                     remove_numbers = TRUE,
