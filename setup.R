@@ -25,6 +25,7 @@ profanity <- as.character(profanity$Your.Gateway.to.the.Chrisitan.Audience)
 profanity <- profanity[4:length(profanity)]
 profanity <- gsub(",$","", profanity)
 profanity <- gsub("^", "", profanity)
+profanity <- rev(profanity)
 
 total <- c(blog, news, twitter)
 
