@@ -71,6 +71,8 @@ saveRDS(quintgram, "./PredictR/quintgram_final.rds")
 sextagram <- sep_ngrams(sextagram)
 saveRDS(sextagram, "./PredictR/sextagram_final.rds")
 
+
+
 rm(unigram, bigram, trigram, quadgram, quintgram, sextagram)
 
 tokenize_test <- function(x, n) {

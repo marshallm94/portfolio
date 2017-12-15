@@ -1,18 +1,16 @@
 library(shiny)
 shinyServer(function(input, output) {
+    
     suppressPackageStartupMessages(library(tidyverse))
     suppressPackageStartupMessages(library(quanteda))
     suppressPackageStartupMessages(library(data.table))
     
-    setwd("/Users/marsh/data_science_coursera/JHU_capstone/")
-    
-    # load files
-    unigram <- reactive({ readRDS("./PredictR/unigram_final.rds") })
-    bigram <- reactive({ readRDS("./PredictR/bigram_final.rds") })
-    trigram <- reactive({ readRDS("./PredictR/trigram_final.rds") })
-    quadgram <- reactive({ readRDS("./PredictR/quadgram_final.rds") })
-    quintgram <- reactive({ readRDS("./PredictR/quintgram_final.rds") })
-    sextagram <- reactive({ readRDS("./PredictR/sextagram_final.rds") })
+    unigram <- reactive({ readRDS("./unigram_final.rds") })
+    bigram <- reactive({ readRDS("./bigram_final.rds") })
+    trigram <- reactive({ readRDS("./trigram_final.rds") })
+    quadgram <- reactive({ readRDS("./quadgram_final.rds") })
+    quintgram <- reactive({ readRDS("./quintgram_final.rds") })
+    sextagram <- reactive({ readRDS("./sextagram_final.rds") })
     
     tokenize_test <- function(x, n) {
         tok <- tokens(x,
@@ -42,7 +40,6 @@ shinyServer(function(input, output) {
         tri_match <- arrange(subset(trigram(), base == search_trigram), desc(count))
         bi_match <- arrange(subset(bigram(), base == search_bigram), desc(count))
         
-        # Stupid Backoff
         pred_dt <- NULL
         if (nrow(sexta_match) > 0) {
             score <- sexta_match$count / sum(subset(quintgram(),
@@ -85,9 +82,7 @@ shinyServer(function(input, output) {
     }
     
     number <- reactive({ input$dropdown })
-    
     string <- reactive({ input$ngram })
-    
     output$prediction <- renderTable({
         predict_word(string(), number_of_words = number())
     })
