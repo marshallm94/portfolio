@@ -56,9 +56,12 @@ sep_ngrams <- function(x) {
     x$base <- gsub(" \\S*$", "", x$ngram)
     x$prediction <- sub(".*\\s+", "", x$ngram)
     x <- select(x, ngram, base, prediction, count)
+    x <- setkey(x, base)
+    x <- as.data.table(arrange(x, desc(count)))
 }
 
 # save final data sets
+unigram <- setkey(unigram, ngram)
 saveRDS(unigram, "./PredictR/unigram_final.rds")
 bigram <- sep_ngrams(bigram)
 saveRDS(bigram, "./PredictR/bigram_final.rds")

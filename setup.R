@@ -35,14 +35,17 @@ sample_set <- total[sample_size]
 
 rm(blog, news, twitter, total, sample_size)
 
+# remove profanity
 for (i in 1:length(profanity)) {
     sample_set <- gsub(profanity[i], " ", sample_set, ignore.case = TRUE)
     message(paste("All instances of", profanity[i], "removed from sample_set:", date(),
                   sep = " "))
 }
 
+# remove hashtags
+sample_set <- gsub(" #[^ ]+", "", sample_set)
+
 saveRDS(sample_set, "./data/non_profane_sample.rds")
-sample_set <- readRDS("./data/non_profane_sample.rds")
 
 system.time(sample_corp <- corpus(sample_set))
 
