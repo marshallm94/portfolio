@@ -56,8 +56,8 @@ sep_ngrams <- function(x) {
     x$base <- gsub(" \\S*$", "", x$ngram)
     x$prediction <- sub(".*\\s+", "", x$ngram)
     x <- select(x, ngram, base, prediction, count)
-    x <- setkey(x, base)
-    x <- as.data.table(arrange(x, desc(count)))
+    x <- x[order(-count)]
+    setkey(x, base, count)
 }
 
 # save final data sets
@@ -74,8 +74,6 @@ saveRDS(quintgram, "./PredictR/quintgram_final.rds")
 sextagram <- sep_ngrams(sextagram)
 saveRDS(sextagram, "./PredictR/sextagram_final.rds")
 
-
-
 rm(unigram, bigram, trigram, quadgram, quintgram, sextagram)
 
 tokenize_test <- function(x, n) {
@@ -91,7 +89,8 @@ tokenize_test <- function(x, n) {
     search_for
 }
 
-predict_word <- function(string, n = 10) {
+# remove n = 5 as second argument for predict_word
+predict_word <- function(string) {
     test <- string
     
     search_bigram <- tokenize_test(test, 1)
@@ -99,6 +98,12 @@ predict_word <- function(string, n = 10) {
     search_quadgram <- tokenize_test(test, 3)
     search_quintgram <- tokenize_test(test, 4)
     search_sextagram <- tokenize_test(test, 5)
+    
+    sexta_match <- sextagram[base == search_sextagram]
+    quint_match <- quintgram[base == search_quintgram]
+    quad_match <- quadgram[base == search_quadgram]
+    tri_match <- trigram[base == search_trigram]
+    bi_match <- bigram[base == search_bigram]
     
     sexta_match <- arrange(subset(sextagram, base == search_sextagram), desc(count))
     quint_match <- arrange(subset(quintgram, base == search_quintgram), desc(count))
@@ -142,5 +147,10 @@ predict_word <- function(string, n = 10) {
     
     pred_dt <- subset(pred_dt, is.na(prediction) == FALSE)
     final_dt <- as.data.table(arrange(pred_dt, desc(score)))
-    head(final_dt, n = n)
+    # for benchmark.R
+    first <- as.character(final_dt[1,1])
+    second <- as.character(final_dt[2,1])
+    third <- as.character(final_dt[3,1])
+    c(first, second, third)
+    #head(final_dt, n = n)
 }
