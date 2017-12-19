@@ -46,6 +46,7 @@ for (i in 1:length(profanity)) {
 sample_set <- gsub(" #[^ ]+", "", sample_set)
 
 saveRDS(sample_set, "./data/non_profane_sample.rds")
+sample_set <- readRDS("./data/non_profane_sample.rds")
 
 system.time(sample_corp <- corpus(sample_set))
 
@@ -72,8 +73,6 @@ create_ngram <- function(tokens, n) {
     message(paste("Saving of", filename, "complete:", date(), sep = " "))
 }
 
-create_ngram(corp_tokens, 6)
-create_ngram(corp_tokens, 5)
 create_ngram(corp_tokens, 4)
 create_ngram(corp_tokens, 3)
 create_ngram(corp_tokens, 2)
@@ -98,7 +97,7 @@ create_table <- function(file) {
 clean_sum <- function(x, filename) {
     message(paste("Starting summation of ngrams...", date(), sep = " "))
     y <- x[, .(count = sum(count)), by = .(ngram)]
-    y <- arrange(y, desc(count))
+    y <- y[order(-count)]
     message(paste("Summation of ngrams complete:", date(), sep = " "))
     y <- as.data.table(y)
     english <- NULL
@@ -118,6 +117,10 @@ clean_sum <- function(x, filename) {
 }
 
 unigram <- create_table("./ngrams/1gram.rds")
+# remove stray hasttags from unigram
+
+unigram <- unigram[-c(grep("#", unigram$ngram))]
+
 clean_sum(unigram, "./ngrams/unigram.rds")
 
 bigram <- create_table("./ngrams/2gram.rds")
@@ -129,8 +132,3 @@ clean_sum(trigram, "./ngrams/trigram.rds")
 quadgram <- create_table("./ngrams/4gram.rds")
 clean_sum(quadgram, "./ngrams/quadgram.rds")
 
-quintgram <- create_table("./ngrams/5gram.rds")
-clean_sum(quintgram, "./ngrams/quintgram.rds")
-
-sextagram <- create_table("./ngrams/6gram.rds")
-clean_sum(sextagram, "./ngrams/sextagram.rds")
