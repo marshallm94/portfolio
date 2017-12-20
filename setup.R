@@ -118,9 +118,7 @@ clean_sum <- function(x, filename) {
 
 unigram <- create_table("./ngrams/1gram.rds")
 # remove stray hasttags from unigram
-
 unigram <- unigram[-c(grep("#", unigram$ngram))]
-
 clean_sum(unigram, "./ngrams/unigram.rds")
 
 bigram <- create_table("./ngrams/2gram.rds")
@@ -131,4 +129,3 @@ clean_sum(trigram, "./ngrams/trigram.rds")
 
 quadgram <- create_table("./ngrams/4gram.rds")
 clean_sum(quadgram, "./ngrams/quadgram.rds")
-

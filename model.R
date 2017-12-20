@@ -72,7 +72,7 @@ tokenize_test <- function(x, n) {
 }
 
 # remove n = 5 as second argument for predict_word
-predict_word <- function(string) {
+predict_word <- function(string, n = 3) {
     test <- string
     
     search_bigram <- tokenize_test(test, 1)
@@ -86,15 +86,15 @@ predict_word <- function(string) {
     # Stupid Backoff
     pred_dt <- NULL
     if (quad_match[,.N] > 0) {
-        score2 <- (0.4^2) * quad_match[,count] / trigram[ngram == search_quadgram, sum(count)]
+        score2 <- 0.4 * quad_match[,count] / trigram[ngram == search_quadgram, sum(count)]
         dt2 <- data.table(prediction = quad_match[,prediction], score = score2)
         pred_dt <- rbind(pred_dt, dt2)
     } else if (tri_match[,.N] > 0) {
-        score3 <- (0.4^3) * tri_match[,count] / bigram[ngram == search_trigram, sum(count)]
+        score3 <- (0.4^2) * tri_match[,count] / bigram[ngram == search_trigram, sum(count)]
         dt3 <- data.table(prediction = tri_match[,prediction], score = score3)
         pred_dt <- rbind(pred_dt, dt3)
     } else if (bi_match[,.N] > 0) {
-        score4 <- (0.4^4) * bi_match[,count] / unigram[ngram == search_bigram, sum(count)]
+        score4 <- (0.4^3) * bi_match[,count] / unigram[ngram == search_bigram, sum(count)]
         dt4 <- data.table(prediction = bi_match[,prediction], score = score4)
         pred_dt <- rbind(pred_dt, dt4)
     } else {
@@ -106,11 +106,5 @@ predict_word <- function(string) {
     }
     
     pred_dt <- pred_dt[order(-score)]
-    
-    # for benchmark.R
-    first <- as.character(pred_dt[1,1])
-    second <- as.character(pred_dt[2,1])
-    third <- as.character(pred_dt[3,1])
-    c(first, second, third)
-    #head(final_dt, n = n)
+    head(pred_dt, n = n)
 }
