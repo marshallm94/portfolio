@@ -1,27 +1,31 @@
 library(shiny)
 shinyUI(
-    fluidPage(
+    fluidPage(theme = "bootstrap.css",
         tabsetPanel(
             tabPanel("PredictR",
-                    titlePanel("PredictR"),
-                    sidebarLayout(
-                        sidebarPanel(
-                             h3("Text Prediction"),
-                             p("Select the number of words you would like predicted
-                               from the drop down menu, enter your sentence into the text 
-                               box to the right, click go and the predicted word(s) will appear below."),
-                             selectInput("dropdown",
-                                         "Number of Words",
-                                         choices = c(0:10),
-                                         selected = 0)
-                        ),
-                        mainPanel(
-                             textInput("ngram",
-                                       "Enter text here",
-                                       placeholder = "Once upon a time"),
-                             submitButton("Go"),
-                             br(),
-                             tableOutput("prediction")
+                    fixedRow(
+                        column(12, align = "center",
+                            titlePanel("PredictR"),
+                                column(12, align = "center",
+                                    p("Select the number of words you would like
+                                      predicted from the drop down menu,"),
+                                    p("enter your sentence into the text box to
+                                      the right,"),
+                                    p("click go and the predicted word(s)
+                                      will appear below."),
+                                    selectInput("dropdown",
+                                                 "Number of Words",
+                                                 choices = c(0:10),
+                                                 selected = 0)
+                                ),
+                        column(12, align = "center",
+                                     textInput("ngram",
+                                               "Enter text here",
+                                               placeholder = "Once upon a time"),
+                                     submitButton("Go"),
+                                     br(),
+                                     tableOutput("prediction")
+                        )
                         )
                     )
             ),
