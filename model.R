@@ -72,9 +72,7 @@ tokenize_test <- function(x, n) {
 }
 
 # remove n = 5 as second argument for predict_word
-predict_word <- function(string, n = 3) {
-    test <- string
-    
+predict_word <- function(test, n = 3) {
     search_bigram <- tokenize_test(test, 1)
     search_trigram <- tokenize_test(test, 2)
     search_quadgram <- tokenize_test(test, 3)
