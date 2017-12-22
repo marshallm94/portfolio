@@ -1,17 +1,17 @@
 library(shiny)
+suppressPackageStartupMessages(library(shinythemes))
 shinyUI(
-    fluidPage(theme = "bootstrap.css",
+    fluidPage(theme = shinytheme("cyborg"),
         tabsetPanel(
             tabPanel("PredictR",
                     fixedRow(
                         column(12, align = "center",
                             titlePanel("PredictR"),
                                 column(12, align = "center",
-                                    p("Select the number of words you would like
+                                    p("1. Select the number of words you would like
                                       predicted from the drop down menu,"),
-                                    p("enter your sentence into the text box to
-                                      the right,"),
-                                    p("click go and the predicted word(s)
+                                    p("2. Enter your sentence into the text box below,"),
+                                    p("3. Click go and the predicted word(s)
                                       will appear below."),
                                     selectInput("dropdown",
                                                  "Number of Words",

@@ -1,5 +1,4 @@
-library(shiny)
-
+suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(quanteda))
 suppressPackageStartupMessages(library(data.table))
