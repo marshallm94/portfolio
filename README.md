@@ -1,1 +1,0 @@
-This repo contains all work for the capstone project of the JHU Data Science Specialization (note that the data itself is in a local directory, to avoid large pushes to Github)
