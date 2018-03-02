@@ -415,3 +415,22 @@ The most basic form of sampling is a random sample, where you randomly sample fr
 **Stratified Sampling** is when you want each of K groups equally represented in your sample, even though they might not be equally represented in your population. You select an equal number of people randomly from each group
 
 **Cluster Random Sampling** is used when you want to analyze some refined population (i.e. women making > $100,000 that live in Boulder). Cluster sampling is an instance of basic random sampling where your population of interest is a very specific subset of some other total population
+
+## Hypothesis Testing
+
+Process:
+
+1. State your *highly refined question* in a scientific manner.
+    * "Science does not prove, it disproves"
+    * The only scientific way to conclude that something is the truth, is to eliminate **all other possibilities** and only, then, no matter how unlikely, the truth is what remains.
+    * In data science and statistics, eliminating all other possibilities is usually not a possibility, so framing your question in a scientific manner is important. This will take the form of defining a significance level and doing your best to only look at one changing variable, while all others remain constant.
+
+2. Define your **Null hypothesis** and **Alternate hypothesis**.
+    * The Null hypothesis is usually a hypothesis along the lines of "there is no difference/effect" when two measurements, and the Alternate hypothesis would be the effect that you hope to detect, or are testing for.
+    * If you are testing whether two measurements are *different*, meaning you are not sure if the effect will be in one direction or another, you will use a two-tailed statistical test.
+        * Example: I want to test to see gas consumption among households on the east coast against households on the west coast (since I have to prior knowledge/inkling that either group might be greater than the other group, using a two-tailed test allows me to see if there is statistically significant evident that they are *different* at all).
+    * If you are expecting the effect to be in a certain direction, than you can use a one-tailed statistical test.
+        * Example: I would like to see if the weights of males dogs are **larger** than those of female dogs. Since I have some premonition that the average male weights will be larger than those of females, I would be able to use a one-tailed statistical test if I wanted. However, **Two - tailed tests are always more conservative than one - tailed tests, and if you are testing significance, its better to be too conservative than not convservative enough**
+3. Define your significance level.
+4. Choose a statistical test and find the test statistic.
+5. Reject or fail to reject the Null hypothesis.
