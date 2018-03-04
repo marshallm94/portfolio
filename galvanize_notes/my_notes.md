@@ -420,6 +420,10 @@ The most basic form of sampling is a random sample, where you randomly sample fr
 
 *By default, use a two-tailed test (more conservative). If you are expecting the change in a certain direction you,* **can** *use a one-tailed test, however its always better to be statistically conservative*
 
+General Notes:
+
+* For all intensive purposes, t-tests are more conservative than z-tests, therefore t-test > z-tests.
+
 Process:
 
 1. State your *highly refined question* in a scientific manner.
@@ -473,10 +477,15 @@ Example: You want to test whether the mean death rate due to drunk-driving accid
 
 **Experimental study results > Observational study results...ALWAYS**
 
+* With observational data, *your subjects "self-assign" themselves into groups*, whereas in an experimental study, you (the scientist) are able to randomly assign your subject into groups, which greatly decreases the probability of confounding variables.
+
 * *Results from observational data are suggestive, but never definitive.*
-* *Always control for confounding*
+    * Since the presence of unknown *confounding variables* is always a possibility (and even a likelihood) with observational data, **causality can NEVER be determined.**
 
-### Experimental Studies
+* An experimental study is structured around the scientific method, *where you change one variable* **and control EVERYTHING else**. With this method, **causality CAN be determined.**
 
-* An experimental study is structured around the scientific method, *where you change one variable* **and control EVERYTHING else**
-* Because you are able to randomly assign subjects to groups, you are able to minimize the confounding effect, wher
+* In general, given unlimited rescources and time (which is never the case), an ideal data science to experiment pipeline would be:
+
+	1. Use EDA on *observational* data to investigate and correlations/relationships where you would want to know if attribute A **causes** a change in attribute B (for any variables in the data set).
+
+	2. Design an *experiment* where you are able to test whether attribute A **causes** the observed change in attribute B.
