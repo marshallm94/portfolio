@@ -418,6 +418,8 @@ The most basic form of sampling is a random sample, where you randomly sample fr
 
 ## Hypothesis Testing
 
+*By default, use a two-tailed test (more conservative). If you are expecting the change in a certain direction you,* **can** *use a one-tailed test, however its always better to be statistically conservative*
+
 Process:
 
 1. State your *highly refined question* in a scientific manner.
@@ -427,17 +429,41 @@ Process:
 
 2. Define your **Null hypothesis** and **Alternate hypothesis**.
     * The Null hypothesis is usually a hypothesis along the lines of "there is no difference/effect" when two measurements, and the Alternate hypothesis would be the effect that you hope to detect, or are testing for.
+        * Example:
+            * H_0: There is not difference in the rate the cars pass by this point between 8-9 AM and 11-12pm.
+            * H_A: The average rate from 8-9 AM is greater than the average rate from 11-12pm
+
+3. Define your significance level.
+    * Convention is 0.05, which is interpreted as falsely rejecting the null hypothesis 5% of the time.
+
+4. Choose a statistical test and find the test statistic.
     * If you are testing whether two measurements are *different*, meaning you are not sure if the effect will be in one direction or another, you will use a two-tailed statistical test.
         * Example: I want to test to see gas consumption among households on the east coast against households on the west coast (since I have to prior knowledge/inkling that either group might be greater than the other group, using a two-tailed test allows me to see if there is statistically significant evident that they are *different* at all).
-    * If you are expecting the effect to be in a certain direction, than you can use a one-tailed statistical test.
+
+    * If you are expecting the effect to be in a certain direction, then you can use a one-tailed statistical test.
         * Example: I would like to see if the weights of males dogs are **larger** than those of female dogs. Since I have some premonition that the average male weights will be larger than those of females, I would be able to use a one-tailed statistical test if I wanted. However, **Two - tailed tests are always more conservative than one - tailed tests, and if you are testing significance, its better to be too conservative than not conservative enough**
-3. Define your significance level.
-4. Choose a statistical test and find the test statistic.
+
 5. Reject or fail to reject the Null hypothesis.
+    * Continuing the example from above, you would use a Poisson Distribution with Lambda = (the rate from 11-12pm), and then find the test-statistic of the rate between 8-9am. If the area to the right of the test-statistic is less than or equal to your pre-defined level of alpha, then you reject the null hypothesis.
+
+### Errors
+
+There are two types of error in hypothesis testing:
+
+1. **Type I Error** - Rejecting the Null hypothesis when it is in fact true.
+    * This is equivalent to a **False Positive**. Your test incorrectly identifies a test-statistic as *from a separate distribution/population,* when it is in fact just a statistical fluke; an extremely unlikely event given your Null hypothesis, but from the distribution/population of your Null hypothesis nonetheless.
+        * Suppose you calculate a test statistic that would lead you to reject the Null hypothesis in favor of the Alternate hypothesis. This means that the probability of observing the test-statistic that you observed, given the Null hypothesis, was less than or equal to the significance level that you previously set. **However, there is still the probability that it did come from your Null hypothesis.** This interpretation is found within the definition of a P-Value; since a p-value is the probability of observing a test-statistic as or more extreme than the one you observed, **there is still some probability of that happening**, no matter how small.
+
+2. **Type II Error** - Failing to reject the Null hypothesis when it is in fact False.
+    * Equivalent to a **False Negative**. Your test incorrectly identifies a test-statistic as *being from the distribution/population of your Null Hypothesis*, when it is in fact from a the distribution population of your Alternate hypothesis.
+        * When you calculate a test-statistic that would lead you to fail to reject the null hypothesis, the interpretation is that observing a test-statistic as or more extreme than the one you observed is not that unlikely (test-stat does not fall in the area of rejection). However, there is still some probability that it came from you Alternate distribution/population, **but was just an extreme event under your Alternate hypothesis**. When this occurs, you are mislead to believe that your test-statistic is within reasonable bounds of your null hypothesis, and therefore from your null hypothesis, **when in fact it is an extreme event from you Alternate hypothesis, but from your Alternate hypothesis nonetheless.**
 
 ## Experimental Studies vs. Observational Studies
 
 **Experimental study results > Observational study results...ALWAYS**
+
+* *Results from observational data are suggestive, but never definitive.*
+* *Always control for confounding*
 
 ### Experimental Studies
 
