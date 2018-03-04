@@ -450,6 +450,32 @@ Process:
 5. Reject or fail to reject the Null hypothesis.
     * Continuing the example from above, you would use a Poisson Distribution with Lambda = (the rate from 11-12pm), and then find the test-statistic of the rate between 8-9am. If the area to the right of the test-statistic is less than or equal to your pre-defined level of alpha, then you reject the null hypothesis.
 
+### T-tests
+
+[MIT T-tests](https://ocw.mit.edu/courses/mathematics/18-05-introduction-to-probability-and-statistics-spring-2014/readings/MIT18_05S14_Reading19.pdf)
+
+**T-tests ALWAYS assume the data are normally distributed**
+
+#### 1 Sample T-tests
+
+Used to test if the observed mean equals a hypothesized mean. **Assumes data are independant and normally distributed**. Determines if there is statistically significant evidence that the sample mean is different than the population mean, given the assumptions.
+
+	[1]: scipy.stats.ttest_1samp(a, popmean)
+
+#### 2 Sample T-tests
+
+Used to test if the **difference** between sample means is statistically significant. **By default, assume unequal variance** between the two samples.
+
+	[1]: scipy.stats.ttest_ind(a, b, equal_var=False)
+
+#### Paired T-tests
+
+Paired t-tests are used when you are comparing two samples from the same population **with the same expected values**. This is used often in medical studies where the researchers are testing whether some treatment has a *statistically significant* effect on some variable. Since, you are measuring some statistic *on the same group of people*, you are measuring the **difference** between two sets of values, and testing **if this difference is significant**.
+
+	[1]: scipy.stats.ttest_rel(a, b)
+
+* Think, "before and after" test
+
 ### Errors
 
 There are two types of error in hypothesis testing:
