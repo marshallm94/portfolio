@@ -476,6 +476,42 @@ Paired t-tests are used when you are comparing two samples from the same populat
 
 * Think, "before and after" test
 
+### Chi-Squared Tests
+
+#### Chi-Squared Goodness of Fit
+
+**Tests to see if observed data follows a specified theoretical distribution.**
+
+Generally speaking, a chi-squared goodness of fit test allows the statistician to see if he will be able to approximate their data with a known distribution.
+
+Process:
+
+1. Define your Null and Alternate Hypothesis.
+
+	* HO: The observed data approximately follows a X distribution. (where X is replaced with Binomial, Normal, Poisson, Exponential, Gamma, etc. Any distribution that the statistician would like to use for further statistical analysis.)
+	* HA: The observed data can not be approximated by a X distribution.
+
+2. Calculate any parameters needed for the hypothesized distribution
+
+	* If Binomial, calculate *p*
+	* if Poisson or Exponential, calculate *lamda*
+	* If Normal, calculate the mean and variance
+	* etc.
+
+3.  Calculate the **expected values (using the hypothesized distribution and the parameters estimated using your data (step 2) for each observation**
+
+4. Calculate the chi-squared test statistic. *For each observation*: **Take the square of the difference between the observed value and the expected value, and divide by the expected value.** Sum all these values, and you have the chi-squared test-statistic
+
+5. Take this test-statistic and calculate the P-value, using the chi-squared distribution with *k* degrees of freedom.
+
+	* Note that by default, degrees are defined as *N* - 1, however, **for every parameter you estimate with your data, you lose one more degree of freedom.**
+	* Example: Assuming you hypothesized that your data could be modeled with an Exponential Distribution (parameterized by lambda), your chi-squared distribution would be parameterized by *N* - 1 - 1 = *N* - 2 degrees of freedom. (the second subtraction of one due to the fact that lambda was estimated using your data)
+
+**Note that a statistically significant P-Value in a Chi-Squared Goodness of Fit Test means that your data does NOT fit your hypothesized distribution well. If you are to approximate your data with a known distribution, you want an INSIGNIFICANT  P-Value. A high P-Value means that the probability of observing your sample given the distribution of your null hypothsis is high, and vice versa**
+
+	[1]: scipy.stats.chisquare(f_obs, f_exp, ddof)
+		#ddof is the "delta degrees of freedom, or any adjustments after *N* - 1
+
 ### Errors
 
 There are two types of error in hypothesis testing:
