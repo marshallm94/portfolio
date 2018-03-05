@@ -489,6 +489,7 @@ Process:
 1. Define your Null and Alternate Hypothesis.
 
 	* HO: The observed data approximately follows a X distribution. (where X is replaced with Binomial, Normal, Poisson, Exponential, Gamma, etc. Any distribution that the statistician would like to use for further statistical analysis.)
+
 	* HA: The observed data can not be approximated by a X distribution.
 
 2. Calculate any parameters needed for the hypothesized distribution
@@ -505,12 +506,46 @@ Process:
 5. Take this test-statistic and calculate the P-value, using the chi-squared distribution with *k* degrees of freedom.
 
 	* Note that by default, degrees are defined as *N* - 1, however, **for every parameter you estimate with your data, you lose one more degree of freedom.**
+
 	* Example: Assuming you hypothesized that your data could be modeled with an Exponential Distribution (parameterized by lambda), your chi-squared distribution would be parameterized by *N* - 1 - 1 = *N* - 2 degrees of freedom. (the second subtraction of one due to the fact that lambda was estimated using your data)
 
-**Note that a statistically significant P-Value in a Chi-Squared Goodness of Fit Test means that your data does NOT fit your hypothesized distribution well. If you are to approximate your data with a known distribution, you want an INSIGNIFICANT  P-Value. A high P-Value means that the probability of observing your sample given the distribution of your null hypothsis is high, and vice versa**
+**Note that a statistically significant P-value in a Chi-Squared Goodness of Fit Test means that your data does NOT fit your hypothesized distribution well. If you are to approximate your data with a known distribution, you want an INSIGNIFICANT  P-value. A high P-value means that the probability of observing your sample given the distribution of your null hypothesis is high, and vice versa**
+
+To perform a chi-squared test of goodness of fit in python used the below method from the scipy.stats module.
 
 	[1]: scipy.stats.chisquare(f_obs, f_exp, ddof)
-		#ddof is the "delta degrees of freedom, or any adjustments after *N* - 1
+
+*Note that the array of expected values "f_exp" will have to be calculated separately, and the ddof parameter is the* **delta degrees of freedom,** *which is any further adjustments adjustments to the degrees of freedom* (from parameter estimation; see step 5)
+
+#### Chi-Squared Test of Independence (also called Pearsons Chi-Squared Test)
+
+[Chi-Squared Test of Independence](https://onlinecourses.science.psu.edu/stat500/node/56)
+
+**Tests to see if two categorical variables are independent**
+
+As with any hypothesis test, the Null and Alternative Hypothesis need to be stated at the outset. With the Chi-Squared Test of Independence, they can be phrased in different ways, however, the general structure of the two are the same.
+
+	* HO: Variables X_1 and X_2 are independent (there is no relationship between them)
+
+	* HA: Variables X_1 and X_2 are not independent (there is a relationship between the two)
+
+Process:
+
+1. After the Null and Alternate Hypothesis have been defined, you create a contingency table. A contingency table is a table of counts, with the categories of X_1 on the left and the categories of X_2 on the top. The data within the table is the count of observations where each category occurs.
+
+2. Calculate the expected counts **using your observed counts**. For each cell in the table, **the expected count is calculated by taking the row total of that cell, multiplying it by the column total of that cell, and dividing by the total number of observations in the table**
+
+	*The interpretation of the values in the expected values contingency table is that the **proportions** between categories are equal.*
+
+3. Calculate the chi-squared test statistic. *For each observation*: **Take the square of the difference between the observed value and the expected value, and divide by the expected value.** Sum all these values, and you have the chi-squared test-statistic
+
+4. Take this test-statistic and calculate the P-value, using the chi-squared distribution with *k* degrees of freedom.
+
+	* **In the test of independence, the degrees of freedom are calculated as: (# rows - 1) * (# columns - 1)
+
+5. In contrast to the Chi-Squared Goodness of Fit, the P-value of the Chi-Squared Test of Independence is interpretted Normally. If the P-value is low, there is evidence against the null hypothesis i.e. there is evidence that X_1 and X_2 are **not** independent. If the P-value is high, then there is not statistically significant evidence that the two variables are **not** independent.
+
+	[1]: scipy.stats.chi2_contingency()
 
 ### Errors
 
