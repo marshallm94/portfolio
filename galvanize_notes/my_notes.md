@@ -551,11 +551,11 @@ Process:
 
 ## Confusion Matrix
 
-
+                ```
                 			 |_H0:true_|_H0:false_|
                 accept H0____|___345___|____29____|
                 reject H0____|___45____|___412____|		
-
+                ```
 
 Calculations:
 
@@ -592,6 +592,30 @@ Power is equal to one minus Beta, or one minus the probability of a Type II Erro
 3. **Sigma** - *As Sigma decreases, your power increases.* The intuition behind this is that Sigma (or, more formally, the *sample* standard deviation) is the numerator of the standard error of the mean. So, as Sigma decreases the overall fraction that is the standard error decreases as well. This means that the sampling distribution of the mean will be narrower, thus decreasing your Type II Error rate, which in turn increases your Power.
 
 4. **N** - *As N increases, your power increases*. Since the square root of N is the denominator in the fraction that is the standard error, as you increase the denominator, the value of the overall fraction decreases. So, as you increase N, your standard error of the mean decreases (having the same effect as decreasing Sigma, from above). Thus, as your standard error decreases, your Type II Error rate decreases, which increases power.
+
+More often than not, you will use R (whether natively or call it from Python) **to calculate the sample size needed to achieve a certain Power in you hypothesis test**. [R pwr package](https://www.statmethods.net/stats/power.html)
+
+Within R, the "pwr" library allows you to calculate this.
+
+To calculate the power of an anova test or *to determine the parameters needed to reach a certain target power*, use the following code (within R), **leaving one of the arguments blank...the one to be calculated**
+
+    [1]: pwr.anova.test(k, n, f, sig.level, power)
+
+* k = number of groups
+* n = number of observations per group
+* f = effect size
+* sig.level = 0.05 (default)
+* power = power
+
+To calculate the power of a t-test or *to determine the parameters needed to reach a certain target power*, use the following code (within R), **leaving one of the arguments blank...the one to be calculated**
+
+    [2]: pwd.t.test(n, d, sig.level, power, type)
+
+* n = number of observations
+* d = effect size (difference between the means divided by the pooled variance)
+* sig.level = 0.05 (defualt)
+* power = power
+* type = "one", "two", or "paired-samples"
 
 
 ### Bonferroni Correction
