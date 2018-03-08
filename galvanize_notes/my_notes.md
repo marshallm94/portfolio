@@ -35,7 +35,12 @@ To push to that new remote:
     $ git push <name_for_remote> <branch_name>
 
 (Note that the difference between `git fetch` and `git pull` is that `git fetch` updates your remote tracking branches and `git pull` brings your current local branch up to date with the remote version, *while also updating your other remote-tracking branches*)
+
 # Python
+
+**To convert a Jupyter Notebook to a python script**
+
+    $ jupyter nbconvert --to script [NOTEBOOK_NAME].ipynb
 
 The "if \__name\__ == '\__main\__':" block of code usually appears at the end of a python script and allows the programmer to have code in their script that will only be run if the script is being run as the "main" program. If the script is being imported into another script and is being used as a module, then the code in this block will not be run.
 
