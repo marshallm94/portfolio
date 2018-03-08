@@ -450,6 +450,16 @@ Process:
 5. Reject or fail to reject the Null hypothesis.
     * Continuing the example from above, you would use a Poisson Distribution with Lambda = (the rate from 11-12pm), and then find the test-statistic of the rate between 8-9am. If the area to the right of the test-statistic is less than or equal to your pre-defined level of alpha, then you reject the null hypothesis.
 
+### Bonferroni Correction
+
+Due to the very nature of P-Values, when you are performing multiple tests, the probability that you observe a P-Value that leads to a Type I Error increases; as more tests are performed the probability of observing a "significant" test-statistic **purely due to chance** increases.
+
+To account for this, you need to adjust the significance level of each of the individual tests so that the overall experimental significance remains the same.
+
+The Bonferroni Correction is one of the ways to account for this. By simply dividing your overall significance level by the number hypotheses you are testing, and then only rejecting the Null hypothesis of any given test if it it passes this adjusted significance level, you retain the overall significance level of the experiment.
+
+Example: You want to test whether the mean death rate due to drunk-driving accidents is the same across all days of the week. You want an overall experimental significance level of 0.05, so you will need to divide 0.05 by the number of tests you are performing (7 choose 2 = 21, Monday vs Tuesday, Monday vs Wednesday,..., Tuesday vs Wednesday, Tuesday vs Thursday,...Saturday vs Sunday.) 0.05/21 = 0.00238. So, when comparing the mean death rate of any given day against the mean death rate of any other day, if the P-Value <= 0.00238, you can reject the Null hypothesis (that the death rate across days are equal) and accept the Alternate hypothesis.
+
 ### T-tests
 
 [MIT T-tests](https://ocw.mit.edu/courses/mathematics/18-05-introduction-to-probability-and-statistics-spring-2014/readings/MIT18_05S14_Reading19.pdf)
@@ -543,11 +553,27 @@ Process:
 
 4. Take this test-statistic and calculate the P-value, using the chi-squared distribution with *k* degrees of freedom.
 
-	* **In the test of independence, the degrees of freedom are calculated as: (# rows - 1) * (# columns - 1)
+	* **In the test of independence, the degrees of freedom are calculated as: (# rows - 1) * (# columns - 1)**
 
 5. In contrast to the Chi-Squared Goodness of Fit, the P-value of the Chi-Squared Test of Independence is interpretted Normally. If the P-value is low, there is evidence against the null hypothesis i.e. there is evidence that X_1 and X_2 are **not** independent. If the P-value is high, then there is not statistically significant evidence that the two variables are **not** independent.
 
 	[1]: scipy.stats.chi2_contingency()
+
+## ANOVA
+
+[Intro](http://www.jbstatistics.com/one-way-anova-introduction/)
+[Formulas](http://www.jbstatistics.com/one-way-anova-the-formulas/)
+
+Anova (Analysis of Variance) is used when you are comparing the means of more than two groups. **The overall goal is to see if there is a statistically significant difference between the means of more than two groups.**
+
+* *note that anova assumes constant variance across the all k groups, and therefore assumes the same number of observations in each group*
+
+The process:
+
+1. Calculate the mean of each group (sum all values, divide by the number of observations in the group)
+
+2. Calculate the overall mean (ftake the means of each )
+
 
 ## Confusion Matrix
 
@@ -616,17 +642,6 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 * sig.level = 0.05 (defualt)
 * power = power
 * type = "one", "two", or "paired-samples"
-
-
-### Bonferroni Correction
-
-Due to the very nature of P-Values, when you are performing multiple tests, the probability that you observe a P-Value that leads to a Type I Error increases; as more tests are performed the probability of observing a "significant" test-statistic **purely due to chance** increases.
-
-To account for this, you need to adjust the significance level of each of the individual tests so that the overall experimental significance remains the same.
-
-The Bonferroni Correction is one of the ways to account for this. By simply dividing your overall significance level by the number hypotheses you are testing, and then only rejecting the Null hypothesis of any given test if it it passes this adjusted significance level, you retain the overall significance level of the experiment.
-
-Example: You want to test whether the mean death rate due to drunk-driving accidents is the same across all days of the week. You want an overall experimental significance level of 0.05, so you will need to divide 0.05 by the number of tests you are performing (7 choose 2 = 21, Monday vs Tuesday, Monday vs Wednesday,..., Tuesday vs Wednesday, Tuesday vs Thursday,...Saturday vs Sunday.) 0.05/21 = 0.00238. So, when comparing the mean death rate of any given day against the mean death rate of any other day, if the P-Value <= 0.00238, you can reject the Null hypothesis (that the death rate across days are equal) and accept the Alternate hypothesis.
 
 ## Experimental Studies vs. Observational Studies
 
