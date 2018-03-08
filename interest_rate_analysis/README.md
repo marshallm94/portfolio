@@ -1,0 +1,1 @@
+A quick analysis that looks at how different attributes affect the interest rate on a loan.
