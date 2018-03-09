@@ -667,9 +667,10 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 
 # Code Snippets
 
+```python
+
 ## Imports
 
-```python
 import math as m
 import matplotlib.pyplot as plt
 import numpy as np
@@ -691,12 +692,25 @@ from regression_tools.plotting_tools import (
     predicteds_vs_actuals)
 plt.style.use('bmh')
 
+# Plotting
 
-```
+def scatter_plot(x, y, df, xlab, ylab, title):
+    fig = plt.figure(figsize=(8,6))
+    ax = fig.add_subplot(111)
+    ax.plot(x, y)
+    ax.set_ylabel(ylab)
+    ax.set_xlabel(ylab)
+    plt.suptitle(title)
+    plt.show()
 
-## Plotting
+def histogram(x, df, title):
+    fig = plt.figure(figsize=(8,6))
+    ax = fig.add_subplot(111)
+    ax.hist(x)
+    plt.suptitle(title)
+    plt.show()
 
-```python
+
 def plot_one_univariate(ax, var_name, target_name, df, mask=None):
     if mask is None:
         plot_univariate_smooth(
@@ -714,10 +728,16 @@ def plot_one_univariate(ax, var_name, target_name, df, mask=None):
 
 _ = scatter_matrix(df, alpha=0.2, figsize=(20, 20), diagonal='kde')
 
+# Pipelines
 
+def add_spline_pipeline(column, knots):
+    return Pipeline([
+    (f'{column}_select', ColumnSelector(name=column)),
+    (f'{column}_spline', NaturalCubicSpline(knots=knots))
+    ])
 
-
-
-
-
+linear_reg_pipe = Pipeline([
+    ('column', ColumnSelector(name='column')),
+    ()
+])
 ```
