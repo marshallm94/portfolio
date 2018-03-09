@@ -738,6 +738,13 @@ def add_spline_pipeline(column, knots):
 
 linear_reg_pipe = Pipeline([
     ('column', ColumnSelector(name='column')),
-    ()
+    ('regression', LinearRegression())
 ])
+
+log_reg_pipe = Pipeline([
+    ('column', ColumnSelector(name='column')),
+    ('regression', LogisticRegression())
+])
+
+log_reg_pipe.predict_proba()
 ```
