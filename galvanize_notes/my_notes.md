@@ -664,3 +664,60 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 	1. Use EDA on *observational* data to investigate and correlations/relationships where you would want to know if attribute A **causes** a change in attribute B (for any variables in the data set).
 
 	2. Design an *experiment* where you are able to test whether attribute A **causes** the observed change in attribute B.
+
+# Code Snippets
+
+## Imports
+
+```python
+import math as m
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from pandas.tools.plotting import scatter_matrix
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.pipeline import Pipeline
+from basis_expansions.basis_expansions import (
+    Polynomial, LinearSpline, NaturalCubicSpline)
+from regression_tools.dftransformers import (
+    ColumnSelector, Identity, FeatureUnion, MapFeature, Intercept)
+from regression_tools.plotting_tools import (
+    plot_univariate_smooth,
+    bootstrap_train,
+    display_coef,
+    plot_bootstrap_coefs,
+    plot_partial_depenence,
+    plot_partial_dependences,
+    predicteds_vs_actuals)
+plt.style.use('bmh')
+
+
+```
+
+## Plotting
+
+```python
+def plot_one_univariate(ax, var_name, target_name, df, mask=None):
+    if mask is None:
+        plot_univariate_smooth(
+            ax,
+            df[var_name].values.reshape(-1, 1),
+            df[target_name],
+            bootstrap=200)
+    else:
+        plot_univariate_smooth(
+            ax,
+            df[var_name].values.reshape(-1, 1),
+            df[target_name],
+            mask=mask,
+            bootstrap=200)
+
+_ = scatter_matrix(df, alpha=0.2, figsize=(20, 20), diagonal='kde')
+
+
+
+
+
+
+
+```
