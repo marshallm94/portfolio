@@ -534,7 +534,7 @@ To perform a chi-squared test of goodness of fit in python used the below method
 
 *Note that the array of expected values "f_exp" will have to be calculated separately, and the ddof parameter is the* **delta degrees of freedom,** *which is any further adjustments adjustments to the degrees of freedom* (from parameter estimation; see step 5)
 
-#### Chi-Squared Test of Independence (also called Pearsons Chi-Squared Test)
+#### Chi-Squared Test of Independence (also called Pearson's Chi-Squared Test)
 
 [Chi-Squared Test of Independence](https://onlinecourses.science.psu.edu/stat500/node/56)
 
@@ -571,13 +571,28 @@ Process:
 
 Anova (Analysis of Variance) is used when you are comparing the means of more than two groups. **The overall goal is to see if there is a statistically significant difference between the means of more than two groups.**
 
-* *note that anova assumes constant variance across the all k groups, and therefore assumes the same number of observations in each group*
+Assumptions:
+	* *Constant variance across all groups/treatments*
+	* *Data are nomally distributed in groups*
 
 The process:
 
-1. Calculate the mean of each group (sum all values, divide by the number of observations in the group)
+1. Define the Null and Alternative hypotheses:
 
-2. Calculate the overall mean (ftake the means of each )
+	* *H0: The means of all k groups are the same*
+	* *HA: At least one of the groups has a mean that is not equal to that of the other groups*
+
+2. Calculate the overall mean (sum the means of each group and divide by the number of groups)
+
+3. Calculate the total sum of squares (SST) - Sum the squared difference between each observation (no matter the group) and the overall mean across all groups.
+
+4. Calculate the sum of squares *between* groups - Sum the product of [the  squared difference between the group mean and the overal mean], with the [number of observations in the group], across all groups.
+
+5. Calculate the sum of squares *within* groups - Sum the product of the variance of the group with the degrees of freedom of the group (number of observations within the group minus one), across all groups.
+
+6. Calculate the F-Statistic - [sum of squares *between* groups divided by the number of groups minus one] divided by [sum of squares *within* groups divided by the number of observations minus the number of groups]
+
+7. Use the F-Statistic (along with the F-Distribution) to calculate the P-value - if the P-value is low, then there is statistically significant evidence that the means between groups are different.
 
 
 ## Confusion Matrix
@@ -706,7 +721,7 @@ def scatter_plot(x, y, df, xlab, ylab, title):
 def histogram(x, df, title):
     fig = plt.figure(figsize=(8,6))
     ax = fig.add_subplot(111)
-    ax.hist(x)
+    ax.hist(df[x])
     plt.suptitle(title)
     plt.show()
 
@@ -746,5 +761,6 @@ log_reg_pipe = Pipeline([
     ('regression', LogisticRegression())
 ])
 
+linear_reg_pipe.predict()
 log_reg_pipe.predict_proba()
 ```
