@@ -603,7 +603,7 @@ The process:
                 reject H0____|___45____|___412____|		
                 ```
 
-Calculations:
+Hypothesis Testing Framework:
 
 * **Alpha** - (Type I Error, False Positive) - Divide the number of times you would reject H0, *given it is true*, (45) by the sum of the the *H0:true* column (or row) (390) = 45 / 390 = 0.1154
 
@@ -612,6 +612,35 @@ Calculations:
 * **Power** - (P(reject H0 | H0:false)) - 1 - **Beta** or divide the number of times you would reject H0, *given it is false*, (412) by the sum of the *H0:false* column (or row) (441) = 412 / 441 = 0.9342
 
 * **Precision** - (P(accept H0 | H0:true)) - 1 - **Alpha** or divide the number of times you would accept H0, *given it is true*, (345) by the sum of the *H0:true* column (or row) (390) = 345 / 390 = 0.8846
+
+Condition/Classification Framework:
+
+                ```             
+                                             Condition
+                                      |____Pos___|____Neg___|
+                    Classified Pos____|____TP____|____FP____|
+                    Classified Neg____|____FN____|____TN____|		
+                ```
+
+* **Accuracy** - TP + TN / TP + TN + FN + FP
+    * *Note that his weights False Positives and False Negatives equally. In practice, the costs associated with each of those errors are rarely equal.*
+
+* **Recall** - TP / TP + FN
+    * Of all the events that are in fact positive, the proportion that are classified as positive.
+    * aka Sensitivity or True Positive Rate (TPR)
+
+* **Precision** - TP / TP + FP
+    * The proportion of all positively classified events that are actually positives.
+    * aka Positive Predictive Value (PPV)
+
+* **False Discovery Rate** - FP / FP + TP
+    * Of the all positively classified events, the proportion that were *incorrectly* classified as positive.
+
+* **False Positive Rate** - FP / FP + TN
+    * Of all the negative events, the proportion that were *incorrectly* classified as positive.
+
+* **False Negative Rate** - FN / FN + TP
+    * Of all the positive events, the proportion that were *incorrectly* classified as negative.
 
 ### Errors
 
