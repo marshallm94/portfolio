@@ -1,8 +1,6 @@
 import math as m
-import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-from random import choices
 
 def plot_means(d, params, fig, ax, repeat, size=200):
 
@@ -53,8 +51,8 @@ if __name__ == '__main__':
 
     repeats = [100,500,750,1000,1250,1500,2000,3000,5000]
 
-    illustrate_clt('Poisson', poisson, repeats, size=50)
-    illustrate_clt('Binomial', binom, repeats, size=50)
-    illustrate_clt('Exponential', expon, repeats, size=50)
-    illustrate_clt('Geometric', geo, repeats, size=50)
-    illustrate_clt('Uniform', uni, repeats, size=50)
+    illustrate_clt('Poisson', poisson, repeats, size=500)
+    illustrate_clt('Binomial', binom, repeats, size=500)
+    illustrate_clt('Exponential', expon, repeats, size=500)
+    illustrate_clt('Geometric', geo, repeats, size=500)
+    illustrate_clt('Uniform', uni, repeats, size=500)

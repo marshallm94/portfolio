@@ -421,6 +421,30 @@ The most basic form of sampling is a random sample, where you randomly sample fr
 
 **Cluster Random Sampling** is used when you want to analyze some refined population (i.e. women making > $100,000 that live in Boulder). Cluster sampling is an instance of basic random sampling where your population of interest is a very specific subset of some other total population
 
+## Central Limit Theorem (CLT)
+
+The CLT states that, given a large enough number of samples, the sampling distribution (of the mean) will be approximately normally distributed, *even if the underlying distribution is NOT normally distributed*, given that the underlying distribution has a finite mean and variance.
+
+    * see illustrate_clt.py
+
+## Bootstrapping
+
+Bootstrapping allows a statistician to calculate the mean and a confidence interval for that mean with only one sample from their population, by re-sampling from the original sample **with replacement**.
+
+Process:
+
+1. Draw a sample of size *N* from the population of interest
+
+2. Draw a value/event from your sample, record it and **replace it**
+
+3. Repeat step 2 *N* times; this will be one "Boostrapped" sample.
+
+4. Record the mean of your bootstapped sample.
+
+5. Repeat steps 2 - 4 *R* times. (creating *R* means, from *R* boostrapped samples, each boostrapped sample of size *N*)
+
+6. Calculate the confidence interval for the mean by arranging all the means in a sorted order, dropping the top and bottom (alpha / 2) percent. This gives you your confidence interval
+
 ## Hypothesis Testing
 
 *By default, use a two-tailed test (more conservative). If you are expecting the change in a certain direction you,* **can** *use a one-tailed test, however its always better to be statistically conservative*
