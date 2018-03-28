@@ -134,6 +134,16 @@ Example:
         print(line)
     file1.close()
 
+## Recursive Algorithms/Functions:
+
+Recursive Algorithms have three tenants that must be met:
+
+1. **Base Case** - There must be a final condition, where, if the condition evaluates to True, the algorithm ceases calling itself, evaluates the current/final state of the data, and then uses that output to work its way back "up" the recursive call.
+
+2. **Change State** - The algorithm must change the state of the data that flows through the algorithm, moving it towards the base case.
+
+3. **Nested Calls** - The algorithm must call itself.
+
 ## Pandas, Numpy, Matplotlib
 
     # conventional aliases for packages
@@ -732,6 +742,14 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 	1. Use EDA on *observational* data to investigate and correlations/relationships where you would want to know if attribute A **causes** a change in attribute B (for any variables in the data set).
 
 	2. Design an *experiment* where you are able to test whether attribute A **causes** the observed change in attribute B.
+
+
+# Machine Learning
+
+## KNN
+
+
+
 
 # Code Snippets
 
