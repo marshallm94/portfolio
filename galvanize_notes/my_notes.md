@@ -748,7 +748,31 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 
 ## KNN
 
+from sklearn.neighbors import KNeighborsClassifier
 
+## Tree Based Methods
+
+### Random Forests
+
+### Boosting
+
+```python
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import AdaBoostRegressor
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import GridSearchCV
+
+
+x_train, x_test, y_train, y_test = train_test_split(x, y)
+
+rf = RandomForestClassifier()
+ada_boost = AdaBoostRegressor()
+```
 
 
 # Code Snippets
