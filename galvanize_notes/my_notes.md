@@ -752,26 +752,72 @@ from sklearn.neighbors import KNeighborsClassifier
 
 ## Tree Based Methods
 
+## Decision Tree
+
+* Implements **recursive binary splitting**
+
+1. Find the best feature and split-value by iterating over all the features and all possible split values for each feature, and splitting on the feature and split-value that leads to the greatest information gain.
+2. For each internal node that is produced from step 1, recursively repeat step 1 at each internal node until some stopping criterion is reached.
+
+## Bagging
+
+1. Create bootstrapped samples
+2. Build one tree per bootstrap sample
+3. mean/mode over all the trees to reduce variance
+
+* low bias, high variance
+* trees are highly correlated
+
 ### Random Forests
+
+* Exact same algorithm as Bagging, however **at each node, only a subset of the features are even considered**. This de-correlates the trees, so that when averaged(mean/mode), a large reduction in variance occurs.
+
+* low bias (for overall model), lower variance than bagging
 
 ### Boosting
 
 ```python
+import math as m
+import pandas as pd
+import numpy as np
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
-
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.ensemble import AdaBoostRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier,RandomForestRegressor, RandomForestClassifier, AdaBoostRegressor, AdaBoostClassifier
 
+def score_model(x_train, y_train, x_test, y_test, model):
+    """
+    Returns the accuracy, precision, recall of test data with model.
+    """
+    model.fit(x_train, y_train)
+    y_hat = model.predict(x_test)
+
+    #scoring
+    acc = accuracy_score(y_test, y_hat)
+    prec = precision_score(y_test, y_hat)
+    recall = recall_score(y_test, y_hat)
+
+    if model.max_features == "auto":
+        num_features = m.floor(m.sqrt(x_train.shape[1]))
+    else:
+        num_features = model.max_features
+
+    name = model.__class__.__name__
+
+    print("{} | test accuracy: {}".format(name, acc))
+    print("{} | test precision: {}".format(name, prec))
+    print("{} | test recall: {}".format(name, recall))
+
+    return acc, prec, recall
 
 x_train, x_test, y_train, y_test = train_test_split(x, y)
 
 rf = RandomForestClassifier()
-ada_boost = AdaBoostRegressor()
+score_model(x_train, y_train, x_test, y_test, rf)
+ada_boost = AdaBoostClassifier()
+ada_boost.fit(x_train, y_train)
+gradient_boost = GradientBoostingClassifier()
+gradient_boost.fit(x_train, y_train)
 ```
 
 
