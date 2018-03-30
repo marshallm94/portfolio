@@ -767,14 +767,36 @@ from sklearn.neighbors import KNeighborsClassifier
 
 * low bias, high variance
 * trees are highly correlated
+* overfitting to training data unlikely
 
 ### Random Forests
 
 * Exact same algorithm as Bagging, however **at each node, only a subset of the features are even considered**. This de-correlates the trees, so that when averaged(mean/mode), a large reduction in variance occurs.
 
-* low bias (for overall model), lower variance than bagging
+* low bias (for overall model), lower variance than bagging (averaging many un-correlated methods reduces variance more than averaging highly correlated methods [individual trees in a bagged model])
 
 ### Boosting
+
+* *See algorithm 10.1 of ESL on page 339 (print)*
+
+* Unlike bagging and random forest, boosted models learn **slowly**, weighting the errors of the last model to help build the new model.
+
+* General concept being that combining many weak predictors can lead to a strong overall predictor (aka Ensemble Method)
+
+1. Initialize the weights for the first model to be uniformly distributed over all observations (w_i = 1/N)
+
+2. Learn a model that **weights the errors by the respective weight of that observation** (in iteration one, all errors will be the same)
+
+3. Calculate the error of that model.
+
+4. Calculate alpha
+
+5. **Reset the weights for the next recursive call**
+
+6. Repeat steps 2 - 5 for *M* total models
+
+7. Output the the summation (over all models) of the product of each model's alpha (estimator weight) and the prediction vector of each individual estimator
+
 
 ```python
 import math as m
@@ -783,7 +805,7 @@ import numpy as np
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, accuracy_score, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier,RandomForestRegressor, RandomForestClassifier, AdaBoostRegressor, AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingRegressor, GradientBoostingClassifier,RandomForestRegressor, RandomForestClassifier, AdaBoostRegressor, AdaBoostClassifier, BaggingClassifier, BaggingRegressor
 
 def score_model(x_train, y_train, x_test, y_test, model):
     """
