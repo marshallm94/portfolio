@@ -752,6 +752,21 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 
 #### Linear Regression
 
+```python
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.pipeline import Pipeline
+
+mod = LinearRegression()
+mod.fit(x_train, y_train)
+y_hat = mod.predict(x_test)
+
+linear_reg_pipe = Pipeline([
+    ('column', ColumnSelector(name='column')),
+    ('regression', LinearRegression())
+])
+```
+
 #### Logistic Regression
 
 #### Regularized Regression
@@ -955,10 +970,7 @@ def add_spline_pipeline(column, knots):
     (f'{column}_spline', NaturalCubicSpline(knots=knots))
     ])
 
-linear_reg_pipe = Pipeline([
-    ('column', ColumnSelector(name='column')),
-    ('regression', LinearRegression())
-])
+
 
 log_reg_pipe = Pipeline([
     ('column', ColumnSelector(name='column')),
