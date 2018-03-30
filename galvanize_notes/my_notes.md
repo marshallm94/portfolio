@@ -746,20 +746,52 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 
 # Machine Learning
 
-## KNN
+## Parametric Models
 
-from sklearn.neighbors import KNeighborsClassifier
+### GLMS
 
-## Tree Based Methods
+#### Linear Regression
 
-## Decision Tree
+#### Logistic Regression
+
+#### Regularized Regression
+
+## Non-Parametric Methods
+
+Non-parametric methods, in contrast to parametric methods, make no assumptions about the functional form of the relationship between the predictors and the response. In other words, they let the data "speak for itself"
+
+* Likely to overfit with a small sample size.
+* Lower bias than parametric methods, higher variance.
+
+### KNN
+
+* Performs poorly in high dimensional space
+
+    1. Calculate the distance (usually Euclidean) from a (set of) test observation(s) to every other training observation.
+
+    2. Order the training observations be their respective distance to the test obsveration(s), with the closest first.
+
+    3. Pick the top K observations, and take the mode (classification) or mean (regression) of the response of those K observations, and predict the response of the test observation to be the mode or the mean.
+
+```python
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(x_train, y_train)
+y_hat = knn.predict(x_test)
+```
+
+### Tree Based Methods
+
+#### Decision Tree
 
 * Implements **recursive binary splitting**
 
-1. Find the best feature and split-value by iterating over all the features and all possible split values for each feature, and splitting on the feature and split-value that leads to the greatest information gain.
-2. For each internal node that is produced from step 1, recursively repeat step 1 at each internal node until some stopping criterion is reached.
+    1. Find the best feature and split-value by iterating over all the features and all possible split values for each feature, and splitting on the feature and split-value that leads to the greatest information gain.
+    
+    2. For each internal node that is produced from step 1, recursively repeat step 1 at each internal node until some stopping criterion is reached.
 
-## Bagging
+#### Bagging
 
 1. Create bootstrapped samples
 2. Build one tree per bootstrap sample
@@ -769,13 +801,13 @@ from sklearn.neighbors import KNeighborsClassifier
 * trees are highly correlated
 * overfitting to training data unlikely
 
-### Random Forests
+#### Random Forests
 
 * Exact same algorithm as Bagging, however **at each node, only a subset of the features are even considered**. This de-correlates the trees, so that when averaged(mean/mode), a large reduction in variance occurs.
 
 * low bias (for overall model), lower variance than bagging (averaging many un-correlated methods reduces variance more than averaging highly correlated methods [individual trees in a bagged model])
 
-### Boosting
+#### Boosting
 
 * *See algorithm 10.1 of ESL on page 339 (print)*
 
@@ -926,4 +958,51 @@ log_reg_pipe = Pipeline([
 
 linear_reg_pipe.predict()
 log_reg_pipe.predict_proba()
+```
+
+### Roc Curve Plot
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
+from scipy import interp
+from sklearn.cross_validation import KFold
+from sklearn.preprocessing import StandardScaler
+
+
+def plot_roc(X, y, clf_class, **kwargs):
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
+    kf = KFold(len(y), n_folds=5, shuffle=True)
+    y_prob = np.zeros((len(y),2))
+    mean_tpr = 0.0
+    mean_fpr = np.linspace(0, 1, 100)
+    all_tpr = []
+    fig = plt.figure(figsize=(8,6))
+    for i, (train_index, test_index) in enumerate(kf):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train = y[train_index]
+        clf = clf_class(**kwargs)
+        clf.fit(X_train,y_train)
+        # Predict probabilities, not classes
+        y_prob[test_index] = clf.predict_proba(X_test)
+        fpr, tpr, thresholds = roc_curve(y[test_index], y_prob[test_index, 1])
+        mean_tpr += interp(mean_fpr, fpr, tpr)
+        mean_tpr[0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        ax = fig.add_subplot(111)
+        ax.plot(fpr, tpr, lw=1, label='ROC fold %d (area = %0.2f)' % (i, roc_auc))
+    mean_tpr /= len(kf)
+    mean_tpr[-1] = 1.0
+    mean_auc = auc(mean_fpr, mean_tpr)
+    plt.plot(mean_fpr, mean_tpr, 'k--',label='Mean ROC (area = %0.2f)' % mean_auc, lw=2)
+    plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Random')
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic')
+    plt.legend(loc="lower right")
+    plt.show()
 ```
