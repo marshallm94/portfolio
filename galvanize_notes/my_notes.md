@@ -766,12 +766,19 @@ Non-parametric methods, in contrast to parametric methods, make no assumptions a
 ### KNN
 
 * Performs poorly in high dimensional space
+* **Features must be scaled** - (since distance is being used)
 
     1. Calculate the distance (usually Euclidean) from a (set of) test observation(s) to every other training observation.
+        * Distance measures:
+            * Euclidean
+            * Manhattan
+            * Cosine Distance (1 - Cosine Similarity)
+                * Cosine Similarity: Divide the dot product of **A** and **B** by the product of the Frobenius Norms of **A** and **B**.
 
     2. Order the training observations be their respective distance to the test obsveration(s), with the closest first.
 
     3. Pick the top K observations, and take the mode (classification) or mean (regression) of the response of those K observations, and predict the response of the test observation to be the mode or the mean.
+        * Best to use an odd value of K to break any ties in a classification setting
 
 ```python
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
@@ -788,18 +795,20 @@ y_hat = knn.predict(x_test)
 * Implements **recursive binary splitting**
 
     1. Find the best feature and split-value by iterating over all the features and all possible split values for each feature, and splitting on the feature and split-value that leads to the greatest information gain.
-    
+
     2. For each internal node that is produced from step 1, recursively repeat step 1 at each internal node until some stopping criterion is reached.
 
 #### Bagging
 
-1. Create bootstrapped samples
-2. Build one tree per bootstrap sample
-3. mean/mode over all the trees to reduce variance
-
 * low bias, high variance
+
 * trees are highly correlated
-* overfitting to training data unlikely
+
+* overfitting to training data likely
+
+    1. Create bootstrapped samples
+    2. Build one tree per bootstrapped sample
+    3. mean/mode over all the trees to reduce variance
 
 #### Random Forests
 
@@ -813,21 +822,21 @@ y_hat = knn.predict(x_test)
 
 * Unlike bagging and random forest, boosted models learn **slowly**, weighting the errors of the last model to help build the new model.
 
-* General concept being that combining many weak predictors can lead to a strong overall predictor (aka Ensemble Method)
+* **General concept being that combining many weak predictors can lead to a strong overall predictor (aka Ensemble Method)**
 
-1. Initialize the weights for the first model to be uniformly distributed over all observations (w_i = 1/N)
+    1. Initialize the weights for the first model to be uniformly distributed over all observations (w_i = 1/N)
 
-2. Learn a model that **weights the errors by the respective weight of that observation** (in iteration one, all errors will be the same)
+    2. Learn a model that **weights the errors by the respective weight of that observation** (in iteration one, all errors will be the same)
 
-3. Calculate the error of that model.
+    3. Calculate the error of that model.
 
-4. Calculate alpha
+    4. Calculate alpha
 
-5. **Reset the weights for the next recursive call**
+    5. **Reset the weights for the next recursive call**
 
-6. Repeat steps 2 - 5 for *M* total models
+    6. Repeat steps 2 - 5 for *M* total models
 
-7. Output the the summation (over all models) of the product of each model's alpha (estimator weight) and the prediction vector of each individual estimator
+    7. Output the the summation (over all models) of the product of each model's alpha (estimator weight) and the prediction vector of each individual estimator
 
 
 ```python
