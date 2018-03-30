@@ -753,6 +753,7 @@ To calculate the power of a t-test or *to determine the parameters needed to rea
 #### Linear Regression
 
 ```python
+import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
@@ -761,13 +762,37 @@ mod = LinearRegression()
 mod.fit(x_train, y_train)
 y_hat = mod.predict(x_test)
 
-linear_reg_pipe = Pipeline([
+rmse = np.sqrt(mean_squared_error(y_test, y_hat))
+
+lin_reg_pipe = Pipeline([
     ('column', ColumnSelector(name='column')),
     ('regression', LinearRegression())
 ])
+
+y_hat = lin_reg_pipe.predict(x_test)
+rmse = np.sqrt(mean_squared_error(y_test, y_hat))
 ```
 
 #### Logistic Regression
+
+* *Note that your X matrix (NOT your y vector) must be scaled before being used by sklearn's LogisticRegression() class (it utilizes Lasso, which must have scaled data)*
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.metric import accuracy_score, precision_score, recall_score
+
+mod = LogisticRegression
+mod.fit(x_train, y_train)
+# return predicted probability of being a success
+y_hat_probs = mod.predict_proba(x_test)[:, 1]
+# returns the predicted class (success or failure)
+y_hat =- mod.predict(x_test)
+
+acc = accuracy_score(y_test, y_hat)
+prec = precision_score(y_test, y_hat)
+recall = recall_score(y_test, y_hat)
+```
 
 #### Regularized Regression
 
@@ -944,7 +969,6 @@ def histogram(x, df, title):
     plt.suptitle(title)
     plt.show()
 
-
 def plot_one_univariate(ax, var_name, target_name, df, mask=None):
     if mask is None:
         plot_univariate_smooth(
@@ -969,16 +993,6 @@ def add_spline_pipeline(column, knots):
     (f'{column}_select', ColumnSelector(name=column)),
     (f'{column}_spline', NaturalCubicSpline(knots=knots))
     ])
-
-
-
-log_reg_pipe = Pipeline([
-    ('column', ColumnSelector(name='column')),
-    ('regression', LogisticRegression())
-])
-
-linear_reg_pipe.predict()
-log_reg_pipe.predict_proba()
 ```
 
 ### Roc Curve Plot
