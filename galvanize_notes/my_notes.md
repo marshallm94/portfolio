@@ -821,17 +821,17 @@ def log_odds_to_prob(log_odds):
 
 #### Regularized Regression
 
-* Both Ridge Regression and Lasso Regression both model the relationship between a set **X** of *p* predictors and a quantitative response *y** as a linear model (same as linear regression).
+* Both Ridge Regression and Lasso Regression both model the relationship between a set **X** of *p* predictors and a quantitative response **y** as a linear model (same as linear regression).
 
 * However, both Ridge and Lasso have an additional term appended onto the loss function of a linear model, the RSS:
 
-    * Ridge: **Lambda** multiplied by the summation of the *squares* of all coefficients.
-        * *l2* penalty
+    * Ridge: **$\lambda$** multiplied by the summation of the *squares* of all coefficients. ($l2$ penalty)
+        * So, the loss function becomes $$RSS - \lambda\sum_{j=1}^p\beta_i^2$$
 
-    * Lasso: **Lambda** multiplied by the summation of the *absolute values* of all the  coefficients.
-        * *l1* penalty
+    * Lasso: **$\lambda$** multiplied by the summation of the *absolute values* of all the  coefficients. ($l1$ penalty)
+        * So, the loss function becomes $$RSS - \lambda\sum_{j=1}^p|\beta_i|$$
 
-The tuning parameter **Lambda** is best selected using cross validation. The practical difference between Lasso and Ridge regression is that Lasso will set some of the coefficients equal to *exactly zero* while ridge regression shrinks the coefficients *towards zero*.
+The tuning parameter **$\lambda$** is best selected using cross validation. The practical difference between Lasso and Ridge regression is that Lasso will set some of the coefficients equal to *exactly zero* while ridge regression shrinks the coefficients *towards zero*.
 
 ##### Lasso Regression
 
